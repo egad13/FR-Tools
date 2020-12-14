@@ -1,0 +1,141 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>FR Breeding Probability Calculator</title>
+	<meta name="description" content="Flight Rising Breeding Probability Calculator">
+	<meta name="author" content="Kaykao">
+
+	<!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
+	
+	<style>
+		div {
+			display: inline-block;
+			margin: 5px;
+			padding: 5px;
+		}
+	</style>
+	
+	<script type="text/javascript" src="app/fr_data.js"></script>
+	<script type="text/javascript" src="app/utils.js"></script>
+	<script type="text/javascript" src="app/calculator.js"></script>
+
+</head>
+
+<body>
+
+	<div id="options">
+		<h2>Breeding for...</h2>
+		<div>
+			<label><input type="checkbox" id="priColCalc">Primary Colour</label><br>
+			<label><input type="checkbox" id="secColCalc">Secondary Colour</label><br>
+			<label><input type="checkbox" id="terColCalc">Tertiary Colour</label><br>
+		</div>
+		<!--<div>
+			<label><input type="checkbox" id="priGeneCalc">Primary Gene</label><br>
+			<label><input type="checkbox" id="secGeneCalc">Secondary Gene</label><br>
+			<label><input type="checkbox" id="terGeneCalc">Tertiary Gene</label><br>
+		</div>-->
+		<!--<div>
+			<label><input type="checkbox" id="breedCalc">Breed</label><br>
+			<label><input type="checkbox" id="eyeCalc">Eye Type</label><br>
+		</div>-->
+	</div>
+	
+	<br>
+
+	<div id="parent1">
+		<h2>Parent 1</h2>
+		
+		<label>Primary Colour<br>
+			<select class="colours" id="pc1"></select>
+		</label>
+		<br><br>
+		<label>Secondary Colour<br>
+			<select class="colours" id="sc1"></select>
+		</label>
+		<br><br>
+		<label>Tertiary Colour<br>
+			<select class="colours" id="tc1"></select>
+		</label>
+		<!--TODO genes, breeds-->
+	</div>
+	
+	<div id="parent2">
+		<h2>Parent 2</h2>
+		
+		<label>Primary Colour<br>
+			<select class="colours" id="pc2"></select>
+		</label>
+		<br><br>
+		<label>Secondary Colour<br>
+			<select class="colours" id="sc2"></select>
+		</label>
+		<br><br>
+		<label>Tertiary Colour<br>
+			<select class="colours" id="tc2"></select>
+		</label>
+		<!--TODO genes, breeds-->
+	</div>
+	
+	
+	<!--TODO child's desired gene, breed, eyes when any of those options are checked-->
+	
+	<br><br>
+	
+	<button type="button" id="calc">Calculate Probability</button>
+	
+	<br><br>
+	
+	<div id="results"></div>
+	
+	<script>
+		const calcBtn = Util.get("calc");
+		const resultElt = Util.get("results");
+		const colourDropdowns = Util.getClz("colours");
+		
+		// populate the colour dropdowns
+		var opt;
+		for (var elt of colourDropdowns){
+			for (var col of FRdata.colours){
+				opt = document.createElement("option");
+				opt.text = col[0];
+				opt.style.backgroundColor = "#"+col[1];
+				opt.style.color = Util.textColourForBg(col[1]);
+				elt.add(opt);
+			}
+		}
+		
+		// TODO evt handlers for hiding/unhiding elts as the checkboxes are maniped
+		
+		// Event handler for the "Calculate button"
+		function calcProbabilities(){
+			//get the start and end colours for each relevant slot
+			var cols = [];
+			if (Util.get("priColCalc").checked)
+				cols.push([Util.chosenOp("pc1").text, Util.chosenOp("pc2").text]);
+			if (Util.get("secColCalc").checked)
+				cols.push([Util.chosenOp("sc1").text, Util.chosenOp("sc2").text]);
+			if (Util.get("terColCalc").checked)
+				cols.push([Util.chosenOp("tc1").text, Util.chosenOp("tc2").text]);
+			
+			//TODO genes, breeds, eyes
+			
+			//get the probabilities of breeding the desired traits
+			const p = Calc.hatchlingProbability({
+				colours: cols
+			});
+			
+			//display the results
+			resultElt.innerHTML =
+				"There is a "+(p["overall"]*100).toFixed(2)
+				+"% chance of hatching the dragon you want.<br><br>If the parents are the same breed, it should theoretically take "+p["nests"][0]+" nests to hatch the desired dragon.<br><br>If the parents are different breeds or an ancient breed, it should theoretically take "+p["nests"][1]+" nests to hatch the desired dragon.";
+		}
+		
+		// set up event handlers
+		Util.addEvt(calcBtn, "click", calcProbabilities);
+	</script>
+</body>
+</html>
