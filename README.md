@@ -4,7 +4,7 @@ A simple javascript calculator for players of Flight Rising. It helps you determ
 
 ## Usage
 
-The latest version of this project is live as a website! Simply visit this link to use it: [Click Me!](https://egad13.github.io/FR-Breeding-Probability-Calc/)
+The latest version of this project is live as a website! Simply visit this link to use it: [Click Me!](https://egad13.github.io/FR-Hatchling-Probability/)
 
 To use the program without an internet connection, download this repository as a .zip, unzip it, and open index.html to run it.
 
