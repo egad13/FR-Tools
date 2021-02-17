@@ -1,0 +1,35 @@
+.sr-only {
+	position:absolute;
+	left:-10000px;
+	top:auto;
+	width:1px;
+	height:1px;
+	overflow:hidden;
+}
+
+body {
+	text-align: center;
+}
+
+div {
+	display: inline-block;
+	margin: 5px;
+	padding: 5px;
+}
+.table {
+	display: table;
+	width: auto;
+}
+.tr {
+	display: table-row;
+}
+.tr>* {
+	display: table-cell;
+	margin: 5px;
+	text-align: left;
+}
+
+#parent1, #parent2, #hatchling {
+	text-align: center;
+	border: 1px solid black;
+}

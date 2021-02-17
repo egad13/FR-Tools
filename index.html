@@ -4,19 +4,11 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>FR Breeding Probability Calculator</title>
+	<title>FR Hatchling Probability Calculator</title>
 	<meta name="description" content="Flight Rising Breeding Probability Calculator">
 	<meta name="author" content="Kaykao">
 
-	<!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
-	
-	<style>
-		div {
-			display: inline-block;
-			margin: 5px;
-			padding: 5px;
-		}
-	</style>
+	<link rel="stylesheet" href="css/styles.css?v=0.1">
 	
 	<script type="text/javascript" src="app/fr_data.js"></script>
 	<script type="text/javascript" src="app/utils.js"></script>
@@ -25,63 +17,151 @@
 </head>
 
 <body>
-
-	<div id="options">
-		<h2>Breeding for...</h2>
-		<div>
-			<label><input type="checkbox" id="priColCalc">Primary Colour</label><br>
-			<label><input type="checkbox" id="secColCalc">Secondary Colour</label><br>
-			<label><input type="checkbox" id="terColCalc">Tertiary Colour</label><br>
-		</div>
-		<!--<div>
-			<label><input type="checkbox" id="priGeneCalc">Primary Gene</label><br>
-			<label><input type="checkbox" id="secGeneCalc">Secondary Gene</label><br>
-			<label><input type="checkbox" id="terGeneCalc">Tertiary Gene</label><br>
-		</div>-->
-		<!--<div>
-			<label><input type="checkbox" id="breedCalc">Breed</label><br>
-			<label><input type="checkbox" id="eyeCalc">Eye Type</label><br>
-		</div>-->
-	</div>
 	
 	<br>
-
+	
+	
 	<div id="parent1">
 		<h2>Parent 1</h2>
 		
-		<label>Primary Colour<br>
-			<select class="colours" id="pc1"></select>
-		</label>
-		<br><br>
-		<label>Secondary Colour<br>
-			<select class="colours" id="sc1"></select>
-		</label>
-		<br><br>
-		<label>Tertiary Colour<br>
-			<select class="colours" id="tc1"></select>
-		</label>
-		<!--TODO genes, breeds-->
+		<div class="table">
+		
+			<div class="tr">
+				<label for="p1-b">Breed:</label>
+				<select class="breed" id="p1-b"></select>
+			</div>
+			
+			<div class="tr">
+				<span>Primary:</span>
+				<label for="p1-c1" class="sr-only">Primary Colour</label>
+				<select class="colour" id="p1-c1"></select>
+				<label for="p1-g1" class="sr-only">Primary Gene</label>
+				<select class="gene" id="p1-g1"></select>
+			</div>
+			
+			<div class="tr">
+				<span>Secondary:</span>
+				<label for="p1-c2" class="sr-only">Secondary Colour</label>
+				<select class="colour" id="p1-c2"></select>
+				<label for="p1-g2" class="sr-only">Secondary Gene</label>
+				<select class="gene" id="p1-g2"></select>
+			</div>
+			
+			<div class="tr">
+				<span>Tertiary:</span>
+				<label for="p1-c3" class="sr-only">Tertiary Colour</label>
+				<select class="colour" id="p1-c3"></select>
+				<label for="p1-g3" class="sr-only">Tertiary Gene</label>
+				<select class="gene" id="p1-g3"></select>
+			</div>
+			
+		</div>
 	</div>
 	
 	<div id="parent2">
 		<h2>Parent 2</h2>
 		
-		<label>Primary Colour<br>
-			<select class="colours" id="pc2"></select>
-		</label>
-		<br><br>
-		<label>Secondary Colour<br>
-			<select class="colours" id="sc2"></select>
-		</label>
-		<br><br>
-		<label>Tertiary Colour<br>
-			<select class="colours" id="tc2"></select>
-		</label>
-		<!--TODO genes, breeds-->
+		<div class="table">
+		
+			<div class="tr">
+				<label for="p2-b">Breed:</label>
+				<select class="breed" id="p2-b"></select>
+			</div>
+			
+			<div class="tr">
+				<span>Primary:</span>
+				<label for="p2-c1" class="sr-only">Primary Colour</label>
+				<select class="colour" id="p2-c1"></select>
+				<label for="p2-g1" class="sr-only">Primary Gene</label>
+				<select class="gene" id="p2-g1"></select>
+			</div>
+			
+			<div class="tr">
+				<span>Secondary:</span>
+				<label for="p2-c2" class="sr-only">Secondary Colour</label>
+				<select class="colour" id="p2-c2"></select>
+				<label for="p2-g2" class="sr-only">Secondary Gene</label>
+				<select class="gene" id="p2-g2"></select>
+			</div>
+			
+			<div class="tr">
+				<span>Tertiary:</span>
+				<label for="p2-c3" class="sr-only">Tertiary Colour</label>
+				<select class="colour" id="p2-c3"></select>
+				<label for="p2-g3" class="sr-only">Tertiary Gene</label>
+				<select class="gene" id="p2-g3"></select>
+			</div>
+			
+		</div>
 	</div>
+
+	<br>
 	
-	
-	<!--TODO child's desired gene, breed, eyes when any of those options are checked-->
+	<div id="hatchling">
+		<h2>Hatchling</h2>
+		
+		<!--TODO child's desired eyes-->
+		
+		<div class="table">
+		
+			<div class="tr">
+				<label for="h-b">Breed:</label>
+				<select class="breed" id="h-b">
+					<option value="any">Any</option>
+				</select>
+			</div>
+			
+			<div class="tr">
+				<span>Primary:</span>
+				<label for="h-c1" class="sr-only">Primary Colour</label>
+				<select class="colour" id="h-c1">
+					<option value="any">Any</option>
+				</select>
+				<label for="h-g1" class="sr-only">Primary Gene</label>
+				<select class="gene" id="h-g1">
+					<option value="any">Any</option>
+				</select>
+			</div>
+			
+			<div class="tr">
+				<span>Secondary:</span>
+				<label for="h-c2" class="sr-only">Secondary Colour</label>
+				<select class="colour" id="h-c2">
+					<option value="any">Any</option>
+				</select>
+				<label for="h-g2" class="sr-only">Secondary Gene</label>
+				<select class="gene" id="h-g2">
+					<option value="any">Any</option>
+				</select>
+			</div>
+			
+			<div class="tr">
+				<span>Tertiary:</span>
+				<label for="h-c3" class="sr-only">Tertiary Colour</label>
+				<select class="colour" id="h-c3">
+					<option value="any">Any</option>
+				</select>
+				<label for="h-g3" class="sr-only">Tertiary Gene</label>
+				<select class="gene" id="h-g3">
+					<option value="any">Any</option>
+				</select>
+			</div>
+			
+		</div>
+		
+		<!-- TODO colour ranges
+		<div class="table">
+			<div class="tr">
+				<input type="radio" name="ranges" id="range-no" checked />
+				<label>Specific Colours</label><br>
+			</div>
+			<div class="tr">
+				<input type="radio" name="ranges" id="range-yes" />
+				<label>Colour Ranges</label>
+			</div>
+		</div> -->
+		
+	</div>
 	
 	<br><br>
 	
@@ -94,44 +174,81 @@
 	<script>
 		const calcBtn = Util.get("calc");
 		const resultElt = Util.get("results");
-		const colourDropdowns = Util.getClz("colours");
+		const colourDropdowns = Util.getClz("colour");
+		const breedDropdowns = Util.getClz("breed");
+		const geneDropdowns = Util.getClz("gene");
+		var opt, optgroup;
+		
+		// TODO populate the eye dropdown
+		
+		// populate the breed dropdowns
+		for (var elt of breedDropdowns) {
+			for (var x of ["modern","ancient"]){
+				optgroup = document.createElement("optgroup");
+				optgroup.label = x;
+				for (var b of FRdata.breeds[x]){
+					opt = document.createElement("option");
+					opt.text = opt.value = b;
+					optgroup.appendChild(opt);
+				}
+				elt.add(optgroup);
+			}
+		}
 		
 		// populate the colour dropdowns
-		var opt;
 		for (var elt of colourDropdowns){
 			for (var col of FRdata.colours){
 				opt = document.createElement("option");
-				opt.text = col[0];
+				opt.text = opt.value = col[0];
 				opt.style.backgroundColor = "#"+col[1];
 				opt.style.color = Util.textColourForBg(col[1]);
 				elt.add(opt);
 			}
 		}
 		
-		// TODO evt handlers for hiding/unhiding elts as the checkboxes are maniped
+		// TODO populate the gene dropdowns
+		for (var elt of geneDropdowns){
+			opt = document.createElement("option");
+			opt.text = opt.value = "not implemented";
+			elt.add(opt);
+		}
 		
-		// Event handler for the "Calculate button"
+		// TODO evt handlers for disabling/enabling UI elements based on what's already been picked
+		
+		// Event handler for the "Calculate Probability" button
 		function calcProbabilities(){
-			//get the start and end colours for each relevant slot
-			var cols = [];
-			if (Util.get("priColCalc").checked)
-				cols.push([Util.chosenOp("pc1").text, Util.chosenOp("pc2").text]);
-			if (Util.get("secColCalc").checked)
-				cols.push([Util.chosenOp("sc1").text, Util.chosenOp("sc2").text]);
-			if (Util.get("terColCalc").checked)
-				cols.push([Util.chosenOp("tc1").text, Util.chosenOp("tc2").text]);
+			//get params from page
+			//TODO hatchling eyes
+			var params = [];
+			for (var x of ["p1", "p2", "h"]) {
+				params.push({
+					breed: Util.chosenOp(x+"-b").value,
+					colours: [
+						Util.chosenOp(x+"-c1").value,
+						Util.chosenOp(x+"-c2").value,
+						Util.chosenOp(x+"-c3").value,
+					],
+					genes: [
+						Util.chosenOp(x+"-g1").value,
+						Util.chosenOp(x+"-g2").value,
+						Util.chosenOp(x+"-g3").value,
+					]
+				});
+			}
 			
-			//TODO genes, breeds, eyes
-			
-			//get the probabilities of breeding the desired traits
+			//calculate probabilities
 			const p = Calc.hatchlingProbability({
-				colours: cols
+				p1: params[0],
+				p2: params[1],
+				h: params[2],
 			});
 			
 			//display the results
+			// TODO probabilities for each nest size
+			// TODO expected number of nests to get bab
 			resultElt.innerHTML =
-				"There is a "+(p["overall"]*100).toFixed(2)
-				+"% chance of hatching the dragon you want.<br><br>If the parents are the same breed, it should theoretically take "+p["nests"][0]+" nests to hatch the desired dragon.<br><br>If the parents are different breeds or an ancient breed, it should theoretically take "+p["nests"][1]+" nests to hatch the desired dragon.";
+				"Each individual egg has a "+(p["overall"]*100).toFixed(2)
+				+"% chance of hatching the dragon you want.<br>This is a 1 in "+(1/p["overall"]).toFixed(0)+" chance.";//<br><br>If the parents are the same breed, it should theoretically take "+p["nests"][0]+" nests to hatch the desired dragon.<br><br>If the parents are different breeds or an ancient breed, it should theoretically take "+p["nests"][1]+" nests to hatch the desired dragon.";
 		}
 		
 		// set up event handlers

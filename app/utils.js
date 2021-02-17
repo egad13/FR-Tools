@@ -60,9 +60,9 @@ var Util = Util || (function(){
 		
 		// HSP equation from http://alienryderflex.com/hsp.html
 		hsp = Math.sqrt(
-		0.299 * (r * r) +
-		0.587 * (g * g) +
-		0.114 * (b * b)
+			0.299 * (r * r) +
+			0.587 * (g * g) +
+			0.114 * (b * b)
 		);
 
 		// Using the HSP value as the light/dark threshold, determine
