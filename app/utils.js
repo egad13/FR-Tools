@@ -14,6 +14,10 @@ var Util = Util || (function(){
 		return e.options[e.selectedIndex];
 	}
 
+	function createElt(tag, attrs) {
+		return Object.assign(document.createElement(tag), attrs);
+	}
+
 	/** A cross-browser compatible method to assign an event to an element.
 	* Supports all standard events. */
 	function addEvt(elem, type, handler){
@@ -78,6 +82,7 @@ var Util = Util || (function(){
 		get: get,
 		getClz: getClz,
 		chosenOp: chosenOp,
+		createElt: createElt,
 		addEvt: addEvt,
 		textColourForBg: textColourForBg
 		

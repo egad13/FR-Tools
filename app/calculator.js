@@ -1,83 +1,109 @@
 
 /** The breeding probability calculator itself. Relies on the FRdata and Utils classes being available.*/
-var Calc = Calc || (function(){
-
-	/** Returns the length of the range between two colours on the FR
-	* colour wheel - ie, the shortest distance between the two colours
-	* on the circular colour array, including both input colours. */
-	function colourRangeLength(one, two) {
-		//find the positions of the colours in the array
-		const first = FRdata.colours.findIndex((o) => o[0] === one);
-		const last = FRdata.colours.findIndex((o) => o[0] === two);
-		
-		//absolute distance between the colours
-		const absDist = Math.abs(first - last);
-		
-		// +1 bc the range is inclusive, and two of the same colour have a range of 1.
-		return 1 + Math.min(FRdata.colours.length - absDist, absDist);
-	}
+var HatchCalc = HatchCalc || (function(){
 	
-	
-	/* Given three attributes p1, p2, h which have standard rarities (genes and breeds), look up and return the probability of getting a hatchling with attribute h if you nest parents with attributes p1 and p2. */
-	function tableProbability(p1, p2, h, arr){
-		// TODO error checking for breeds
-		// TODO error checking for genes
-		if (p1 == p2 && p1 == h && p2 == h) {
-			return 1;
+	/** Given a probability of an outcome and an array of numbers of attempts,
+	* returns a table of the probability of getting at least one success in
+	* each of the numbers of attempts. */
+	function chanceTable(prob, steps){
+		lossProb = 1-prob;
+		result = [];
+		for (var x of steps){
+			result.push([x, 1-(lossProb**x)]);
 		}
-		var rarity1 = arr.rarities[p1],
-			rarity2 = arr.rarities[p2];
-		var idx = (h == p1) ? 0 : 1;
-		return FRdata.rarity_table[rarity1][rarity2][idx];
+		return result;
 	}
-	//usage for breeds: tableProbability("bogsneak", "spiral", "spiral", FRdata.breeds)
-	//usage for genes:  tableProbability("basic", "contour", "basic", FRdata.genes)
-
+	
 	/** TODO write this doc comment */
+	// TODO split this into several dedicated functions for my own sanity, actually
 	function hatchlingProbability(params){
-		// TODO error checking
+		// TODO error checking for EVERYTHING
 		
-		var temp;
-		
-		// correct colour probability
-		// TODO find a way to do this that isn't dumb
-		// TODO error check that the h colours are within the p1-p2 range
-		// TODO acceptable colour RANGE from the hatchling
-		var colProb = 1, colFrac = 1;
-		for (var i = 0; i < 3; i++) {
-			if (params["h"].colours[i] !== "any"){
-				temp = colourRangeLength(params["p1"].colours[i], params["p2"].colours[i]);
-				colFrac *= temp;
-			}
-		}
-		colProb = 1/colFrac;
+		var prob = {
+			err: [],
+			
+			colours: 1,
+			breed: 1,
+			//genes: 1,
+			eye: 1,
+			overall: 1
+		};
 		
 		// breed probability
-		var breedProb = 1;
-		if (params["h"].breed !== "any"){
-			breedProb = tableProbability(
-				params["p1"].breed,
-				params["p2"].breed,
-				params["h"].breed,
-				FRdata.breeds
-			);
+		if ( !FRdata.areBreedsCompatible(params.p1.breed, params.p2.breed) ){
+			prob.err.push("Incompatible parent breeds. Moderns can breed with any other modern; ancients can breed with the same species of ancient.");
+		}
+		if (params.h.breed !== "any"){
+			if (params.h.breed !== params.p1.breed && params.h.breed !== params.p2.breed){
+				prob.err.push("Hatchling breed is not one of the parents' breeds.");
+			} else {
+				prob.breed = FRdata.calcRarityProb(
+					FRdata.breeds,
+					params.p1.breed,
+					params.p2.breed,
+					params.h.breed
+				);
+				prob.overall *= prob.breed;
+			}
 		}
 		
-		//TODO genes, breeds, eyes
+		// eye probability
+		if (params.h.eye !== "any"){
+			prob.eye = FRdata.eyes[params.h.eye].probability;
+			prob.overall *= prob.eye;
+		}
 		
-		const overallProb = 1 * colProb * breedProb; // * geneProb * eyeProb;
+		// colour probability
+		// TODO accept a colour RANGE from the hatchling
+		var denominator = 1;
+		for (const slot of Object.keys(params.h.colours)) {
+			if (params.h.colours[slot] !== "any"){
+				// error checking.
+				if (!FRdata.isColourInRange(
+						params.p1.colours[slot],
+						params.p2.colours[slot],
+						params.h.colours[slot]
+					)){
+					prob.err.push(`Hatchling's ${slot} colour is not within the range of the parents' ${slot} colours.`);
+				} else {
+					denominator *= FRdata.colourRangeLength(params.p1.colours[slot], params.p2.colours[slot]);
+				}
+			}
+		}
+		prob.colours = 1/denominator;
+		prob.overall *= prob.colours;
+		
+		
+		//genes probability
+		prob.genes = 1;
+		for (const slot of Object.keys(params.h.genes)) {
+			if (params.h.genes[slot] !== "any"){
+				if (params.h.genes[slot] !== params.p1.genes[slot] && params.h.genes[slot] !== params.p2.genes[slot]){
+					prob.err.push(`Hatchling ${slot} gene is not one of the parents' ${slot} genes.`);
+				} else {
+					prob.genes *= FRdata.calcRarityProb(
+						FRdata.genes[slot],
+						params.p1.genes[slot],
+						params.p2.genes[slot],
+						params.h.genes[slot]
+					);
+				}
+			}
+		}
+		prob.overall *= prob.genes;
+		
+		// table of the chance of hatching the goal within X eggs.
+		prob.eggtable = chanceTable(prob.overall, [1, 5, 10, 20, 50, 100]);
+		
+		// TODO try to figure out a way of making a chance table for number of NESTS as well.
 		//const nestSame = Math.ceil(colFrac / FRdata.avgEggsSameBreed);  // TODO incl. genes, breeds, eyes
 		//const nestDiff = Math.ceil(colFrac / FRdata.avgEggsDiffBreed);  // TODO incl. genes, breeds, eyes
 		
-		return {
-			colours: colProb,
-			overall: overallProb
-			// TODO expected number of nests
+		//in prob:
 			// nests: [nestSame, nestDiff]
-		};
+		
+		return prob;
 	}
-
-	// TODO eye type probability
 
 
 	return {
