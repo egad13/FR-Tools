@@ -2,11 +2,19 @@
 /** A number of generally useful functions. */
 var Util = Util || (function(){
 	
+	// Some aliases/shorthands for basic dom searching/manipulation
+
 	/** Gets a dom element using its id. */
 	function get(id){ return document.getElementById(id); }
 
 	/** Gets an array of dom elements with the given class. */
 	function getClz(clz){ return document.getElementsByClassName(clz); }
+
+	/** Gets a dom element using a query string */
+	function query(str){ return document.querySelector(str); }
+
+	/** Gets an array of dom elements using a query string */
+	function queryAll(str){ return document.querySelectorAll(str); }
 
 	/** Gets the selected <option> of the <select> with the given id. */
 	function chosenOp(id){
@@ -14,8 +22,9 @@ var Util = Util || (function(){
 		return e.options[e.selectedIndex];
 	}
 
-	function createElt(tag, attrs) {
-		return Object.assign(document.createElement(tag), attrs);
+	/** Creates a dom element and assigns to it all the properties in props*/
+	function createElt(tag, props) {
+		return Object.assign(document.createElement(tag), props);
 	}
 
 	/** A cross-browser compatible method to assign an event to an element.
@@ -81,6 +90,8 @@ var Util = Util || (function(){
 		
 		get: get,
 		getClz: getClz,
+		query: query,
+		queryAll: queryAll,
 		chosenOp: chosenOp,
 		createElt: createElt,
 		addEvt: addEvt,

@@ -201,14 +201,13 @@
 			for (var i = 0; i < FRdata.breeds.length; i++) {
 				const opt = Util.createElt("option", {value: i, text: FRdata.breeds[i].name});
 				if (FRdata.breeds[i].type === "M") {
-					moderns.appendChild(opt);
+					moderns.append(opt);
 				}
 				else {
-					ancients.appendChild(opt);
+					ancients.append(opt);
 				}
 			}
-			elt.add(moderns);
-			elt.add(ancients);
+			elt.append(moderns, ancients);
 		}
 		
 		// populate the colour dropdowns
@@ -223,8 +222,10 @@
 		}
 		
 		// populate the gene dropdowns
+		// TODO default val should be basic, except for hatchling, which has a default of Any
+		// TODO maybe repopulate these + set to basic when the associated breed changes to one with diff available genes
 		for (var slot of ["primary", "secondary", "tertiary"]){
-			const dropdowns = document.querySelectorAll(`select.${slot}.gene`);
+			const dropdowns = Util.queryAll(`select.${slot}.gene`);
 			for (var elt of dropdowns) {
 				for (var i = 0; i < FRdata.genes[slot].length; i++){
 					elt.add(
@@ -233,8 +234,6 @@
 				}
 			}
 		}
-		
-		// TODO evt handlers for disabling/enabling UI elements based on what's already been picked
 		
 		// Event handler for the "Calculate Probability" button
 		function calcProbabilities(){
@@ -265,24 +264,7 @@
 				h: params[2],
 			});
 			
-			// change the egg table values to percentages and prepare their html
-			var eggtable = "";
-			for (var i = 0; i < p.eggtable.length; i++){
-				if (p.eggtable[i][1] >= 0.999){
-					p.eggtable[i][1] = "~100%";
-				} else {
-					p.eggtable[i][1] = (p.eggtable[i][1]*100).toFixed(2) + "%";
-				}
-				eggtable += 
-					`<tr>
-						<td>${p.eggtable[i][0]}</td>
-						<td>${p.eggtable[i][1]}</td>
-					</tr>`;
-			}
-			
 			// display the results
-			// TODO probabilities for each nest size
-			// TODO expected number of nests to get bab
 			
 			if (p.err.length > 0){
 				var str = "I have terrible news. There were errors in your input.<ul>";
@@ -295,13 +277,39 @@
 				resultElt.innerHTML =
 					`Breeding these parents will produce the Goal dragon ${(p.overall*100).toFixed(2)}% of the time, or 1 out of every ${(1/p.overall).toFixed(2)} eggs.<br><br>
 					
+					Each nest will have an average of ${p.avg_nest_size.toFixed(2)} eggs in it. This means each nest has a ${(p.per_nest*100).toFixed(2)}% chance of producing a Goal dragon, or 1 out of every ${(1/p.per_nest).toFixed(2)} nests.<br><br>
+					
 					Chance of hatching Goal within X number of eggs:<br>
 					<table>
 						<tr><th>Eggs</th><th>Chance</th></tr>
-						${eggtable}
+						${chanceTableToHtml(p.egg_table)}
+					</table>
+					
+					Chance of hatching Goal within X number of nests:<br>
+					<table>
+						<tr><th>Nests</th><th>Chance</th></tr>
+						${chanceTableToHtml(p.nest_table)}
 					</table>`;
 			}
 				
+		}
+		
+		// Turns a 2d array into rows for an HTML table
+		function chanceTableToHtml(table) {
+			var out = "";
+			for (var i = 0; i < table.length; i++){
+				if (table[i][1] >= 0.999){
+					table[i][1] = "~100%";
+				} else {
+					table[i][1] = (table[i][1]*100).toFixed(2) + "%";
+				}
+				out += 
+					`<tr>
+						<td>${table[i][0]}</td>
+						<td>${table[i][1]}</td>
+					</tr>`;
+			}
+			return out;
 		}
 		
 		// set up event handlers
