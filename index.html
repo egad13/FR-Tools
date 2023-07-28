@@ -265,14 +265,12 @@
 			});
 			
 			// display the results
-			
 			if (p.err.length > 0){
 				var str = "I have terrible news. There were errors in your input.<ul>";
 				for (var e of p.err){
 					str += `<li>${e}</li>`;
 				}
 				resultElt.innerHTML = str + "</ul>";
-				
 			} else {
 				resultElt.innerHTML =
 					`Breeding these parents will produce the Goal dragon ${(p.overall*100).toFixed(2)}% of the time, or 1 out of every ${(1/p.overall).toFixed(2)} eggs.<br><br>
@@ -289,6 +287,15 @@
 					<table>
 						<tr><th>Nests</th><th>Chance</th></tr>
 						${chanceTableToHtml(p.nest_table)}
+					</table><br><br>
+					
+					The chances of hatching a dragon with X attribute matching the Goal is:<br>
+					<table>
+						<tr><th>Attribute</th><th>Chance</th></tr>
+						<tr><td>Breed</td><td>${(p.breed*100).toFixed(2)}%</td></tr>
+						<tr><td>Eye type</td><td>${(p.eye*100).toFixed(2)}%</td></tr>
+						<tr><td>Colours</td><td>${(p.colour*100).toFixed(2)}%</td></tr>
+						<tr><td>Genes</td><td>${(p.gene*100).toFixed(2)}%</td></tr>
 					</table>`;
 			}
 				
