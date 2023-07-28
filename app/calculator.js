@@ -114,7 +114,7 @@ var HatchCalc = HatchCalc || (function(){
 				eye: eyeProbability(params),
 				colour: colourProbability(params),
 				gene: geneProbability(params),
-				//gender: genderProbability(params),
+				gender: genderProbability(params),
 			};
 		
 		for(const key in prob){

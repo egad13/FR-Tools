@@ -100,8 +100,6 @@
 	<div id="hatchling">
 		<h2>Hatchling</h2>
 		
-		<!--TODO child's desired eyes-->
-		
 		<div class="table">
 		
 			<div class="tr">
@@ -115,6 +113,15 @@
 				<label for="h-e">Eye Type:</label>
 				<select id="h-e">
 					<option value="any" selected="selected">Any</option>
+				</select>
+			</div>
+			
+			<div class="tr">
+				<label for="h-gen">Gender:</label>
+				<select id="h-gen">
+					<option value="any" selected="selected">Any</option>
+					<option value="m">Male</option>
+					<option value="f">Female</option>
 				</select>
 			</div>
 			
@@ -256,6 +263,7 @@
 				});
 			}
 			params[2].eye = Util.chosenOp("h-e").value;
+			params[2].gender = Util.chosenOp("h-gen").value;
 			
 			//calculate probabilities
 			const p = HatchCalc.hatchlingProbability({
