@@ -26,6 +26,20 @@ var Util = Util || (function(){
 	function createElt(tag, props) {
 		return Object.assign(document.createElement(tag), props);
 	}
+	
+	// Other miscellaneous useful functions
+	
+	/** Like Array.map(), but for object literals; ie, performs the given function on all its properties. If the given object has child object literals, it will recursively apply the function to the children objects' properties too.
+	 * @param {object} obj The object whose properties to perform the function on.
+	 * @param {function} func The function to apply to the properties.*/
+	// TODO the check to see if a value is itself an object literal returns true for functions. Figure out if there's a brief way to make it not do that.
+	function mapObj(obj, func){			
+		return Object.fromEntries(
+			Object.entries(obj).map(([k, v]) => 
+				[k, (Object.is(v.constructor, Object)) ? mapObj(v, func) : func(v)]
+			)
+		);
+	}
 
 	/** A cross-browser compatible method to assign an event to an element.
 	* Supports all standard events. */
@@ -94,6 +108,7 @@ var Util = Util || (function(){
 		queryAll: queryAll,
 		chosenOp: chosenOp,
 		createElt: createElt,
+		mapObj: mapObj,
 		addEvt: addEvt,
 		textColourForBg: textColourForBg
 		

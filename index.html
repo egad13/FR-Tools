@@ -111,14 +111,14 @@
 			
 			<div class="tr">
 				<label for="h-e">Eye Type:</label>
-				<select id="h-e">
+				<select id="h-e" class="eye">
 					<option value="any" selected="selected">Any</option>
 				</select>
 			</div>
 			
 			<div class="tr">
 				<label for="h-gen">Gender:</label>
-				<select id="h-gen">
+				<select id="h-gen" class="gender">
 					<option value="any" selected="selected">Any</option>
 					<option value="m">Male</option>
 					<option value="f">Female</option>
@@ -187,12 +187,115 @@
 	
 	<!-- TODO add credits for where you got your dataaaaaaaa -->
 	
-	<script>
-		const calcBtn = Util.get("calc");
-		const resultElt = Util.get("results");
-		const colourDropdowns = Util.getClz("colour");
-		const breedDropdowns = Util.getClz("breed");
-		const geneDropdowns = Util.getClz("gene");
+	<script id="misc-functions">
+		// Collects all the dropdown nodes for a dragon into one object for easy manipulation and access
+		function collectDragonSelects(id){
+			var res = {
+				breed: Util.query(`#${id} .breed`),
+				colours: {
+					primary: Util.query(`#${id} .primary.colour`),
+					secondary: Util.query(`#${id} .secondary.colour`),
+					tertiary: Util.query(`#${id} .tertiary.colour`)
+				},
+				genes: {
+					primary: Util.query(`#${id} .primary.gene`),
+					secondary: Util.query(`#${id} .secondary.gene`),
+					tertiary: Util.query(`#${id} .tertiary.gene`)
+				}
+			};
+			if (id === "hatchling") {
+				res.eye = Util.query("#hatchling .eye");
+				res.gender = Util.query("#hatchling .gender");
+			}
+			return res;
+		}
+		
+		// Turns a table of probabilities given by HatchCalc into rows for an HTML table
+		function chanceTableToHtml(table) {
+			var out = "";
+			for (var i = 0; i < table.length; i++){
+				if (table[i][1] >= 0.999){
+					table[i][1] = "~100%";
+				} else {
+					table[i][1] = (table[i][1]*100).toFixed(2) + "%";
+				}
+				out += 
+					`<tr>
+						<td>${table[i][0]}</td>
+						<td>${table[i][1]}</td>
+					</tr>`;
+			}
+			return out;
+		}
+	</script>
+	<script id="event-handlers">
+		// Event handler for the "Calculate Probability" button
+		function calcProbabilities(){
+			//calculate probabilities
+			const getVal = (x) => x.options[x.selectedIndex].value;
+			const p = HatchCalc.hatchlingProbability(
+				Util.mapObj(parent1, getVal),
+				Util.mapObj(parent2, getVal),
+				Util.mapObj(goal, getVal)
+			);
+			
+			// display the results
+			if (p.err.length > 0){
+				resultElt.innerHTML = 
+					`<div id="overview">
+						<p>That hatchling is impossible with the given parents!</p>
+						<ul>
+							<li>${p.err.join("</li>\n<li>")}</li>
+						</ul>
+					</div>`;
+			} else {
+				resultElt.innerHTML =
+					`<div id="overview">
+						<p>Breeding these parents will produce the Goal dragon ${(p.overall*100).toFixed(2)}% of the time, or 1 out of every ${(1/p.overall).toFixed(2)} eggs.</p>
+					
+						<p>Each nest will have an average of ${p.avg_nest_size.toFixed(2)} eggs in it. This means each nest has a ${(p.per_nest*100).toFixed(2)}% chance of producing a Goal dragon, or 1 out of every ${(1/p.per_nest).toFixed(2)} nests.</p>
+					</div>
+					
+					<div id="egg-table">
+						<table>
+							<caption>Chance of hatching Goal within X number of eggs</caption>
+							<tr><th>Eggs</th><th>Chance</th></tr>
+							${chanceTableToHtml(p.egg_table)}
+						</table>
+					</div>
+					
+					<div id="nest-table">
+						<table>
+							<caption>Chance of hatching Goal within X number of nests</caption>
+							<tr><th>Nests</th><th>Chance</th></tr>
+							${chanceTableToHtml(p.nest_table)}
+						</table>
+					</div>
+					
+					<div id="attrs-table">
+						<table>
+							<caption>Chances of hatching a dragon with X attribute matching the Goal</caption>
+							<tr><th>Attribute</th><th>Chance</th></tr>
+							<tr><td>Breed</td><td>${(p.breed*100).toFixed(2)}%</td></tr>
+							<tr><td>Eye type</td><td>${(p.eye*100).toFixed(2)}%</td></tr>
+							<tr><td>Colours</td><td>${(p.colour*100).toFixed(2)}%</td></tr>
+							<tr><td>Genes</td><td>${(p.gene*100).toFixed(2)}%</td></tr>
+						</table>
+					</div>`;
+			}
+				
+		}
+	</script>
+	<script id="window_onload">
+		const calcBtn = Util.get("calc"),
+			resultElt = Util.get("results"),
+			colourDropdowns = Util.getClz("colour"),
+			breedDropdowns = Util.getClz("breed"),
+			geneDropdowns = Util.getClz("gene");
+		
+		const parent1 = collectDragonSelects("parent1"),
+			parent2 = collectDragonSelects("parent2"),
+			goal = collectDragonSelects("hatchling");
 		
 		// populate the eye dropdown
 		for (var i = 0; i < FRdata.eyes.length; i++){
@@ -231,7 +334,7 @@
 		// populate the gene dropdowns
 		// TODO default val should be basic, except for hatchling, which has a default of Any
 		// TODO maybe repopulate these + set to basic when the associated breed changes to one with diff available genes
-		for (var slot of ["primary", "secondary", "tertiary"]){
+		for (const slot of ["primary", "secondary", "tertiary"]){
 			const dropdowns = Util.queryAll(`select.${slot}.gene`);
 			for (var elt of dropdowns) {
 				for (var i = 0; i < FRdata.genes[slot].length; i++){
@@ -240,91 +343,6 @@
 					);
 				}
 			}
-		}
-		
-		// Event handler for the "Calculate Probability" button
-		function calcProbabilities(){
-			//get params from page
-			//TODO hatchling eyes
-			var params = [];
-			for (var x of ["p1", "p2", "h"]) {
-				params.push({
-					breed: Util.chosenOp(x+"-b").value,
-					colours: {
-						primary: Util.chosenOp(x+"-c1").value,
-						secondary: Util.chosenOp(x+"-c2").value,
-						tertiary: Util.chosenOp(x+"-c3").value,
-					},
-					genes: {
-						primary: Util.chosenOp(x+"-g1").value,
-						secondary: Util.chosenOp(x+"-g2").value,
-						tertiary: Util.chosenOp(x+"-g3").value,
-					}
-				});
-			}
-			params[2].eye = Util.chosenOp("h-e").value;
-			params[2].gender = Util.chosenOp("h-gen").value;
-			
-			//calculate probabilities
-			const p = HatchCalc.hatchlingProbability({
-				p1: params[0],
-				p2: params[1],
-				h: params[2],
-			});
-			
-			// display the results
-			if (p.err.length > 0){
-				var str = "I have terrible news. There were errors in your input.<ul>";
-				for (var e of p.err){
-					str += `<li>${e}</li>`;
-				}
-				resultElt.innerHTML = str + "</ul>";
-			} else {
-				resultElt.innerHTML =
-					`Breeding these parents will produce the Goal dragon ${(p.overall*100).toFixed(2)}% of the time, or 1 out of every ${(1/p.overall).toFixed(2)} eggs.<br><br>
-					
-					Each nest will have an average of ${p.avg_nest_size.toFixed(2)} eggs in it. This means each nest has a ${(p.per_nest*100).toFixed(2)}% chance of producing a Goal dragon, or 1 out of every ${(1/p.per_nest).toFixed(2)} nests.<br><br>
-					
-					Chance of hatching Goal within X number of eggs:<br>
-					<table>
-						<tr><th>Eggs</th><th>Chance</th></tr>
-						${chanceTableToHtml(p.egg_table)}
-					</table>
-					
-					Chance of hatching Goal within X number of nests:<br>
-					<table>
-						<tr><th>Nests</th><th>Chance</th></tr>
-						${chanceTableToHtml(p.nest_table)}
-					</table><br><br>
-					
-					The chances of hatching a dragon with X attribute matching the Goal is:<br>
-					<table>
-						<tr><th>Attribute</th><th>Chance</th></tr>
-						<tr><td>Breed</td><td>${(p.breed*100).toFixed(2)}%</td></tr>
-						<tr><td>Eye type</td><td>${(p.eye*100).toFixed(2)}%</td></tr>
-						<tr><td>Colours</td><td>${(p.colour*100).toFixed(2)}%</td></tr>
-						<tr><td>Genes</td><td>${(p.gene*100).toFixed(2)}%</td></tr>
-					</table>`;
-			}
-				
-		}
-		
-		// Turns a 2d array into rows for an HTML table
-		function chanceTableToHtml(table) {
-			var out = "";
-			for (var i = 0; i < table.length; i++){
-				if (table[i][1] >= 0.999){
-					table[i][1] = "~100%";
-				} else {
-					table[i][1] = (table[i][1]*100).toFixed(2) + "%";
-				}
-				out += 
-					`<tr>
-						<td>${table[i][0]}</td>
-						<td>${table[i][1]}</td>
-					</tr>`;
-			}
-			return out;
 		}
 		
 		// set up event handlers

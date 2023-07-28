@@ -33,41 +33,41 @@ var HatchCalc = HatchCalc || (function(){
 	}
 	
 	/** Returns the probability of the goal breed occurring, given the parent breeds; or an error message if the probability can't be calculated.*/
-	function breedProbability(params){
-		if ( !FRdata.areBreedsCompatible(params.p1.breed, params.p2.breed) ){
+	function breedProbability(parent1, parent2, goal){
+		if ( !FRdata.areBreedsCompatible(parent1.breed, parent2.breed) ){
 			return ["Incompatible parent breeds. Moderns can breed with any other modern; ancients can breed with the same species of ancient."];
 		}
-		if (params.h.breed === "any") {
+		if (goal.breed === "any") {
 			return 1;
 		}
 		
-		if (params.h.breed !== params.p1.breed && params.h.breed !== params.p2.breed){
+		if (goal.breed !== parent1.breed && goal.breed !== parent2.breed){
 			return ["Hatchling breed is not one of the parents' breeds."];
 		}
-		return FRdata.calcRarityProb(FRdata.breeds, params.p1.breed, params.p2.breed, params.h.breed);
+		return FRdata.calcRarityProb(FRdata.breeds, parent1.breed, parent2.breed, goal.breed);
 	}
 	
 	/** Returns the probability of the goal eyes occurring.*/
-	function eyeProbability(params){
+	function eyeProbability(goal){
 		// TODO error check
-		if (params.h.eye === "any") {
+		if (goal.eye === "any") {
 			return 1;
 		}
-		return FRdata.eyes[params.h.eye].probability;
+		return FRdata.eyes[goal.eye].probability;
 	}
 	
 	/** Returns the probability of the goal colours occurring, given the parent colourss; or error messages if the probability can't be calculated.*/
-	function colourProbability(params){
+	function colourProbability(parent1, parent2, goal){
 		var errs = [];
 		var denominator = 1;
-		for (const slot of Object.keys(params.h.colours)) {
-			if (params.h.colours[slot] === "any") {
+		for (const slot of Object.keys(goal.colours)) {
+			if (goal.colours[slot] === "any") {
 				continue;
 			}
-			if (!FRdata.isColourInRange(params.p1.colours[slot], params.p2.colours[slot], params.h.colours[slot] )){
+			if (!FRdata.isColourInRange(parent1.colours[slot], parent2.colours[slot], goal.colours[slot] )){
 				errs.push(`Hatchling's ${slot} colour is not within the range of the parents' ${slot} colours.`);
 			} else {
-				denominator *= FRdata.colourRangeLength(params.p1.colours[slot], params.p2.colours[slot]);
+				denominator *= FRdata.colourRangeLength(parent1.colours[slot], parent2.colours[slot]);
 			}
 		}
 		if (errs.length > 0){
@@ -77,17 +77,17 @@ var HatchCalc = HatchCalc || (function(){
 	}
 	
 	/** Returns the probability of the goal genes occurring, given the parent genes; or error messages if the probability can't be calculated.*/
-	function geneProbability(params){
+	function geneProbability(parent1, parent2, goal){
 		var errs = [];
 		var n = 1;
-		for (const slot of Object.keys(params.h.genes)) {
-			if (params.h.genes[slot] === "any") {
+		for (const slot of Object.keys(goal.genes)) {
+			if (goal.genes[slot] === "any") {
 				continue;
 			}
-			if (params.h.genes[slot] !== params.p1.genes[slot] && params.h.genes[slot] !== params.p2.genes[slot]){
+			if (goal.genes[slot] !== parent1.genes[slot] && goal.genes[slot] !== parent2.genes[slot]){
 				errs.push(`Hatchling ${slot} gene is not one of the parents' ${slot} genes.`);
 			} else {
-				n *= FRdata.calcRarityProb(FRdata.genes[slot], params.p1.genes[slot], params.p2.genes[slot], params.h.genes[slot]);
+				n *= FRdata.calcRarityProb(FRdata.genes[slot], parent1.genes[slot], parent2.genes[slot], goal.genes[slot]);
 			}
 		}
 		if (errs.length > 0){
@@ -97,8 +97,8 @@ var HatchCalc = HatchCalc || (function(){
 	}
 	
 	/** Returns the probability of the goal gender occurring.*/
-	function genderProbability(params){
-		if (params.h.gender === "any") {
+	function genderProbability(goal){
+		if (goal.gender === "any") {
 			return 1;
 		}
 		return 0.5;
@@ -106,15 +106,15 @@ var HatchCalc = HatchCalc || (function(){
 	
 	/** Calculates the overall probability of a goal hatchling occurring given the properties of the two parents, as well as tables of expected probabilities within several attempts, and probabilities of success in individual properties. */
 	// TODO Maybe rethink this params object so it's slightly less obscure what's happening here...
-	function hatchlingProbability(params){		
+	function hatchlingProbability(parent1, parent2, goal){		
 		var overall = 1,
 			err = [],
 			prob = {
-				breed: breedProbability(params),
-				eye: eyeProbability(params),
-				colour: colourProbability(params),
-				gene: geneProbability(params),
-				gender: genderProbability(params),
+				breed: breedProbability(parent1, parent2, goal),
+				colour: colourProbability(parent1, parent2, goal),
+				gene: geneProbability(parent1, parent2, goal),
+				eye: eyeProbability(goal),
+				gender: genderProbability(goal),
 			};
 		
 		for(const key in prob){
@@ -131,7 +131,7 @@ var HatchCalc = HatchCalc || (function(){
 		prob.egg_table = chanceTable(prob.overall, [1, 5, 10, 20, 50, 100, 200]);
 		
 		// average nest size, and rough probability of hatching the goal in each nest
-		const nestSizes = FRdata.nestSizesForBreeds(params.p1.breed, params.p2.breed);
+		const nestSizes = FRdata.nestSizesForBreeds(parent1.breed, parent2.breed);
 		prob.avg_nest_size = weightedMean(nestSizes.map((x) => x.eggs), nestSizes.map((x) => x.probability));
 		prob.per_nest = probInAttempts(prob.overall, prob.avg_nest_size);
 		
