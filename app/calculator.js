@@ -128,7 +128,7 @@ var HatchCalc = HatchCalc || (function(){
 		prob.err = err;
 		
 		// table of the chance of hatching the goal within X eggs
-		prob.egg_table = chanceTable(prob.overall, [1, 5, 10, 20, 50, 100, 200]);
+		prob.egg_table = chanceTable(prob.overall, [1, 5, 10, 20, 50, 100]);
 		
 		// average nest size, and rough probability of hatching the goal in each nest
 		const nestSizes = FRdata.nestSizesForBreeds(parent1.breed, parent2.breed);
@@ -136,7 +136,7 @@ var HatchCalc = HatchCalc || (function(){
 		prob.per_nest = probInAttempts(prob.overall, prob.avg_nest_size);
 		
 		// table of the chance of hatching the goal within X nests
-		prob.nest_table = chanceTable(prob.per_nest, [1, 5, 10, 20, 50, 100, 200]);
+		prob.nest_table = chanceTable(prob.per_nest, [1, 5, 10, 20, 50, 100]);
 		
 		console.log(prob);
 		return prob;

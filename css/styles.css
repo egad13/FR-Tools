@@ -1,3 +1,21 @@
+
+/* || Variables, Etc */
+
+:root {
+	--crimson: #721c09;
+	--gold: #e7cb9e;
+	--off-white: #f7f6f2;
+	--dark-gray: #404040;
+	--standard-gap: 10px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+/* || Utilities */
+
+/* visually hides elements that exist for screenreader accessibility only. */
 .sr-only {
 	position:absolute;
 	left:-10000px;
@@ -7,29 +25,103 @@
 	overflow:hidden;
 }
 
+/* || Layout */
+
+html {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100%;
+}
 body {
-	text-align: center;
+	min-width: min-content;
+	max-width: 950px;
+	margin: 0;
+}
+header, footer {
+	padding: calc(var(--standard-gap)*2);
+}
+header>h1,
+h2 {
+	margin: 0;
+}
+main {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: calc(var(--standard-gap)*3) var(--standard-gap);
+	padding: var(--standard-gap);
+}
+button {
+	padding: var(--standard-gap);
+}
+table {
+	border-collapse: collapse;
+	border: 1px solid var(--dark-gray);
+	margin: 0 auto;
+}
+caption {
+	padding: calc(var(--standard-gap)/2);
+}
+td, th {
+	padding: calc(var(--standard-gap)/2) calc(var(--standard-gap)*1.5);
 }
 
-div {
-	display: inline-block;
-	margin: 5px;
-	padding: 5px;
+/* || Colours */
+
+html {
+	background: repeating-linear-gradient(-45deg, #383838, #383838 2px, #000000 2px, #000000 10px);
 }
-.table {
-	display: table;
-	width: auto;
+body{
+	background: #fff;
+	box-shadow: 0 0 15px 5px #000;
 }
-.tr {
-	display: table-row;
+header, footer {
+	background: var(--crimson);
+	color: var(--gold);
 }
-.tr>* {
-	display: table-cell;
-	margin: 5px;
+footer a, footer a:visited, footer a:hover {
+	color: var(--gold);
+}
+td, th {
+	border: 1px solid var(--dark-gray);
+}
+th {
+	background: var(--crimson);
+	color: var(--gold);
+}
+tr:nth-child(2n) {
+	background: #fff;
+}
+tr:nth-child(2n+1) {
+	background: var(--off-white);
+}
+
+/* || Typography */
+
+html {
+	font-family: sans-serif;
+	font-size: 14px;
+	text-align: center;
+}
+header {
 	text-align: left;
 }
-
-#parent1, #parent2, #hatchling {
-	text-align: center;
-	border: 1px solid black;
+footer {
+	font-style: italic;
+}
+button {
+	font-size: 110%;
+	font-weight: bold;
+}
+li {
+	text-align: left;
+}
+caption {
+	font-size: 90%;
+	font-style: italic;
+	font-weight: bold;
+}
+th {
+	font-weight: bold;
 }
