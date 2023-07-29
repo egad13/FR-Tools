@@ -105,8 +105,7 @@ var HatchCalc = HatchCalc || (function(){
 	}	
 	
 	/** Calculates the overall probability of a goal hatchling occurring given the properties of the two parents, as well as tables of expected probabilities within several attempts, and probabilities of success in individual properties. */
-	// TODO Maybe rethink this params object so it's slightly less obscure what's happening here...
-	function hatchlingProbability(parent1, parent2, goal){		
+	function getHatchlingReport(parent1, parent2, goal){		
 		var overall = 1,
 			err = [],
 			prob = {
@@ -138,14 +137,72 @@ var HatchCalc = HatchCalc || (function(){
 		// table of the chance of hatching the goal within X nests
 		prob.nest_table = chanceTable(prob.per_nest, [1, 5, 10, 20, 50, 100]);
 		
-		console.log(prob);
 		return prob;
+	}
+	
+	/** Turns a chance table into rows for an HTML table.*/
+	function formatChanceTable(table) {
+		var out = "";
+		for (var i = 0; i < table.length; i++){
+			const chance = (table[i][1] >= 0.999) ? "~100%"
+							: (table[i][1]*100).toFixed(2) + "%";
+			out += 
+				`<tr>
+					<td>${table[i][0]}</td>
+					<td>${chance}</td>
+				</tr>`;
+		}
+		return out;
+	}
+	
+	/**Converts a probability report object calculated by getHatchlingReport() into readable HTML*/
+	function formatHatchlingReport(result) {
+		if (result.err.length > 0) {
+			return `
+				<div class="placeholder">
+					<p>That hatchling is impossible with the given parents!</p>
+					<ul>
+						<li>${result.err.join("</li>\n\t\t<li>")}</li>
+					</ul>
+				</div>`;
+		}
+		const percent = (x) => (x*100).toFixed(2) + "%",
+			inverse = (x) => (1/x).toFixed(2),
+			round = (x) => x.toFixed(2);
+		return `
+			<div id="overview">
+				<p>This pair will produce a Goal hatchling ${percent(result.overall)} of the time, or 1 out of every ${inverse(result.overall)} eggs.</p>
+			
+				<p>Each nest will have an average of ${round(result.avg_nest_size)} eggs. This means each nest has a ${percent(result.per_nest)} chance of producing a Goal hatchling, or 1 out of every ${inverse(result.per_nest)} nests.</p>
+			</div>
+			
+			<table id="egg-table">
+				<caption>Chance of hatching Goal within X eggs:</caption>
+				<tr><th>Eggs</th><th>Chance</th></tr>
+				${formatChanceTable(result.egg_table)}
+			</table>
+		
+			<table id="nest-table">
+				<caption>Chance of hatching Goal within X nests:</caption>
+				<tr><th>Nests</th><th>Chance</th></tr>
+				${formatChanceTable(result.nest_table)}
+			</table>
+		
+			<table id="attrs-table">
+				<caption>Chances of a hatchling with X matching the Goal:</caption>
+				<tr><th>Attribute</th><th>Chance</th></tr>
+				<tr><td>Breed</td><td>${percent(result.breed)}</td></tr>
+				<tr><td>Eye type</td><td>${percent(result.eye)}</td></tr>
+				<tr><td>Colours</td><td>${percent(result.colour)}</td></tr>
+				<tr><td>Genes</td><td>${percent(result.gene)}</td></tr>
+			</table>`;
 	}
 
 
 	return {
 		
-		hatchlingProbability: hatchlingProbability
+		getHatchlingReport: getHatchlingReport,
+		formatHatchlingReport: formatHatchlingReport
 		
 	};
 
