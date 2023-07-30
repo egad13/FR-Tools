@@ -2,6 +2,10 @@
 /** A Breeding probability calculator. Relies on the FRdata namespace being available.*/
 var HatchCalc = HatchCalc || (function(){
 
+	/////////////////////////////////////////////////////
+	///////////////// GENERAL FUNCTIONS /////////////////
+	/////////////////////////////////////////////////////
+
 	/** Returns a table of the probability of an outcome with the given probability occurring at least once in each of the given numbers of attempts.
 	 * @param {number} prob The probability of an outcome.
 	 * @param {number[]} steps An array of numbers of attempts to calculate overall probabilities for.*/
@@ -31,6 +35,11 @@ var HatchCalc = HatchCalc || (function(){
 		}
 		return result;
 	}
+
+
+	/////////////////////////////////////////////////////
+	///////// HATCHLING ATTRIBUTE PROBABILITIES /////////
+	/////////////////////////////////////////////////////
 
 	/** Returns the probability of the goal breed occurring, given the parent breeds; or an error message if the probability can't be calculated.*/
 	function breedProbability(parent1, parent2, goal){
@@ -104,6 +113,25 @@ var HatchCalc = HatchCalc || (function(){
 		return 0.5;
 	}
 
+	/** The probability that, when pairing two dragons, the nest will contain at least 1 Goal hatchling.
+	 * @param {object[]} nestSizes An array of possible nest sizes and the probabilities that they'll occur. 
+	 * @param {any} eggProb The probability that a single egg will be a Goal hatchling. */
+	function nestProbability(nestSizes, eggProb) {
+		// P(A|B) for independent events is P(A) * P(B)
+		// prob that nest size occurs AND contains a goal hatchling
+		const nestSuccessProb =
+			nestSizes.map(n => n.probability * probInAttempts(eggProb, n.eggs));
+
+		// P(A or B) = P(A) + P(B)
+		// prob that any nest will contain a goal hatchling
+		return nestSuccessProb.reduce((a, b) => a + b);
+	}
+
+
+	/////////////////////////////////////////////////////
+	///////////////// OUTPUT FUNCTIONS //////////////////
+	/////////////////////////////////////////////////////
+
 	/** Calculates the overall probability of a goal hatchling occurring given the properties of the two parents, as well as tables of expected probabilities within several attempts, and probabilities of success in individual properties. */
 	function getHatchlingReport(parent1, parent2, goal){
 		var overall = 1,
@@ -119,26 +147,22 @@ var HatchCalc = HatchCalc || (function(){
 		for(const key in prob){
 			if (prob[key] instanceof Array) {
 				err.push(...prob[key]);
-				prob[key] = 1;
+				continue;
 			}
 			overall *= prob[key];
 		}
+		prob.overall = overall;
 
 		if (err.length > 0) {
 			return {err: err};
 		}
 
-		prob.overall = overall;
-
-		// table of the chance of hatching the goal within X eggs
 		prob.egg_table = chanceTable(prob.overall, [1, 5, 10, 20, 50, 100]);
 
-		// average nest size, and rough probability of hatching the goal in each nest
 		const nestSizes = FRdata.nestSizesForBreeds(parent1.breed, parent2.breed);
-		prob.avg_nest_size = weightedMean(nestSizes.map((x) => x.eggs), nestSizes.map((x) => x.probability));
-		prob.per_nest = probInAttempts(prob.overall, prob.avg_nest_size);
 
-		// table of the chance of hatching the goal within X nests
+		prob.avg_nest_size = weightedMean(nestSizes.map((x) => x.eggs), nestSizes.map((x) => x.probability));
+		prob.per_nest = nestProbability(nestSizes, prob.overall);
 		prob.nest_table = chanceTable(prob.per_nest, [1, 5, 10, 20, 50, 100]);
 
 		return prob;
@@ -172,9 +196,11 @@ var HatchCalc = HatchCalc || (function(){
 			round = (x) => x.toFixed(2);
 		return `
 			<div id="overview">
-				<p>This pair will produce a Goal hatchling ${percent(result.overall)} of the time, or 1 out of every ${inverse(result.overall)} eggs.</p>
+				<p>Each egg from this pair will produce a Goal hatchling ${percent(result.overall)} of the time; that's 1 out of every ${inverse(result.overall)} eggs.</p>
 
-				<p>Each nest will have an average of ${round(result.avg_nest_size)} eggs. This means each nest has a ${percent(result.per_nest)} chance of producing a Goal hatchling, or 1 out of every ${inverse(result.per_nest)} nests.</p>
+				<p>Each nest from this pair will contain at least one Goal hatchling ${percent(result.per_nest)} of the time; that's 1 out of every ${inverse(result.per_nest)} nests.</p>
+
+				<p>There will be an average of ${round(result.avg_nest_size)} eggs per nest.</p>
 			</div>
 
 			<table id="egg-table">
