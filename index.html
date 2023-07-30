@@ -156,67 +156,113 @@
 <footer>
 	<span><a href="https://github.com/egad13/FR-Hatchling-Probability">Source code</a></span>
 	|
-	<span>Last updated: <time datetime="2023-07-29">29 July 2023</time></span>
+	<span>Last updated: <time datetime="2023-07-30">30 July 2023</time></span>
 </footer>
 
 	<!-- TODO add credits for where you got your dataaaaaaaa -->
 
-	<script id="misc-functions">
-		// Collects all the dropdown nodes for a dragon into one object for easy manipulation and access
-		function collectDragonSelects(id){
-			var res = {
-				breed: Util.query(`#${id} .breed`),
-				colours: {
-					primary: Util.query(`#${id} .primary.colour`),
-					secondary: Util.query(`#${id} .secondary.colour`),
-					tertiary: Util.query(`#${id} .tertiary.colour`)
-				},
-				genes: {
-					primary: Util.query(`#${id} .primary.gene`),
-					secondary: Util.query(`#${id} .secondary.gene`),
-					tertiary: Util.query(`#${id} .tertiary.gene`)
-				}
-			};
-			if (id === "hatchling") {
-				res.eye = Util.query("#hatchling .eye");
-				res.gender = Util.query("#hatchling .gender");
-			}
-			return res;
-		}
-	</script>
-	<script id="event-handlers">
-		// Event handler for the "Calculate Probability" button
-		function calcProbabilities(){
-			const getVal = (x) => x.options[x.selectedIndex].value;
-			const p = HatchCalc.getHatchlingReport(
-				Util.mapObj(parent1, getVal),
-				Util.mapObj(parent2, getVal),
-				Util.mapObj(goal, getVal)
-			);
-			console.log(p);
-
-			resultElt.innerHTML = HatchCalc.formatHatchlingReport(p);
-		}
-	</script>
 	<script id="window-onload">
-		const calcBtn = Util.get("calc"),
-			resultElt = Util.get("results"),
-			colourDropdowns = Util.getClz("colour"),
-			breedDropdowns = Util.getClz("breed"),
-			geneDropdowns = Util.getClz("gene");
-
+		"use strict";
 		const parent1 = collectDragonSelects("parent1"),
 			parent2 = collectDragonSelects("parent2"),
-			goal = collectDragonSelects("hatchling");
+			goal = collectDragonSelects("hatchling"),
+			calcBtn = Util.get("calc"),
+			resultElt = Util.get("results");
+
+		//////// Event Handlers ////////
+
+		// Calculate button
+		Util.addEvt(calcBtn, "click", () => {
+			const p = HatchCalc.getHatchlingReport(
+				Util.mapObj(parent1, x => x.value),
+				Util.mapObj(parent2, x => x.value),
+				Util.mapObj(goal, x => x.value)
+			);
+			console.log(p);
+			resultElt.innerHTML = HatchCalc.formatHatchlingReport(p);
+		});
+
+		// Breed dropdowns - changes contents of gene dropdowns
+		(function() {
+			// Previous breed selections; used to decide if genes need repopulating.
+			var prevP1, prevP2, prevH;
+
+			// Clears gene dropdowns associated with a breed dropdown, then
+			// repopulates them with genes available to the newly chosen breed.
+			function repopulateGenes(evt, prev) {
+				const breed = evt.target.value;
+				// If old and new breed are compatible, they have the same set of genes
+				if (FRdata.areBreedsCompatible(breed, prev)) {
+					return;
+				}
+
+				const setID = evt.target.closest("fieldset").id,
+					isHatch = setID.includes("hatch"),
+					removeUntil = isHatch ? 1 : 0;
+
+				for (const slot of ["primary", "secondary", "tertiary"]) {
+					var oldValFound = false;
+					const dropdown = Util.query(`#${setID} select.${slot}.gene`),
+						oldVal = (dropdown.value.length == 0 ? -1 : dropdown.value);
+					// remove old options
+					for(var i = dropdown.options.length-1; i >= removeUntil; i--) {
+						dropdown.remove(i);
+					}
+					// add new ones. preserve previous selection if possible.
+					if (isHatch) {
+						dropdown.options[0].selected = true;
+					}
+					for (const gene of FRdata.genesForBreed(breed, slot)) {
+						const attrs = {value: gene.index, text: gene.name};
+						if (!oldValFound && attrs.value == oldVal) {
+							oldValFound = true;
+							attrs.selected = true;
+						}
+						if (!oldValFound && !isHatch && attrs.text === "Basic") {
+							attrs.selected = true;
+						}
+						dropdown.add(Util.createElt("option", attrs));
+					}
+				}
+			}
+
+			Util.addEvt(parent1.breed, "focus", (evt) => {
+				prevP1 = evt.target.value;
+			});
+			Util.addEvt(parent1.breed, "change", (evt) => {
+				repopulateGenes(evt, prevP1);
+				prevP1 = evt.target.value;
+			});
+
+			Util.addEvt(parent2.breed, "focus", (evt) => {
+				prevP2 = evt.target.value;
+			});
+			Util.addEvt(parent2.breed, "change", (evt) => {
+				repopulateGenes(evt, prevP2);
+				prevP2 = evt.target.value;
+			});
+
+			Util.addEvt(goal.breed, "focus", (evt) => {
+				prevH = evt.target.value;
+			});
+			Util.addEvt(goal.breed, "change", (evt) => {
+				repopulateGenes(evt, prevH);
+				prevH = evt.target.value;
+			});
+		})();
+
+
+		//////// Populate Dropdowns ////////
 
 		// populate the eye dropdown
+		const eyes = Util.get("h-e");
 		for (var i = 0; i < FRdata.eyes.length; i++){
 			const opt = Util.createElt("option", {value: i, text: FRdata.eyes[i].name});
-			Util.get("h-e").add(opt);
+			eyes.add(opt);
 		}
 
 		// populate the breed dropdowns
-		for (var elt of breedDropdowns) {
+		for (var elt of Util.getClz("breed")) {
 			const moderns = Util.createElt("optgroup", {label: "Modern"}),
 				ancients = Util.createElt("optgroup", {label: "Ancient"});
 
@@ -233,7 +279,7 @@
 		}
 
 		// populate the colour dropdowns
-		for (var elt of colourDropdowns){
+		for (var elt of Util.getClz("colour")){
 			for (var i = 0; i < FRdata.colours.length; i++){
 				const col = FRdata.colours[i];
 				elt.add(Util.createElt("option", {
@@ -244,21 +290,35 @@
 		}
 
 		// populate the gene dropdowns
-		// TODO default val should be basic, except for hatchling, which has a default of Any
-		// TODO maybe repopulate these + set to basic when the associated breed changes to one with diff available genes
-		for (const slot of ["primary", "secondary", "tertiary"]){
-			const dropdowns = Util.queryAll(`select.${slot}.gene`);
-			for (var elt of dropdowns) {
-				for (var i = 0; i < FRdata.genes[slot].length; i++){
-					elt.add(
-						Util.createElt("option", {value: i, text: FRdata.genes[slot][i].name})
-					);
-				}
-			}
-		}
+		Util.triggerEvt(parent1.breed, "change");
+		Util.triggerEvt(parent2.breed, "change");
+		Util.triggerEvt(goal.breed, "change");
 
-		// set up event handlers
-		Util.addEvt(calcBtn, "click", calcProbabilities);
+		//////// Misc Functions ////////
+
+		// Collects all the dropdown nodes for a dragon into one object for
+		// easy manipulation and access
+		function collectDragonSelects(id){
+			var res = {
+				breed: Util.query(`#${id} .breed`),
+				colours: {
+					primary: Util.query(`#${id} .primary.colour`),
+					secondary: Util.query(`#${id} .secondary.colour`),
+					tertiary: Util.query(`#${id} .tertiary.colour`)
+				},
+				genes: {
+					primary: Util.query(`#${id} .primary.gene`),
+					secondary: Util.query(`#${id} .secondary.gene`),
+					tertiary: Util.query(`#${id} .tertiary.gene`)
+				}
+			};
+			if (id === "hatchling") {
+				res.eye = Util.query(`#${id} .eye`);
+				res.gender = Util.query(`#${id} .gender`);
+			}
+			return res;
+		}
 	</script>
+
 </body>
 </html>

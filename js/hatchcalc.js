@@ -1,7 +1,7 @@
 
 /** A Breeding probability calculator. Relies on the FRdata namespace being available.*/
 var HatchCalc = HatchCalc || (function(){
-	
+
 	/** Returns a table of the probability of an outcome with the given probability occurring at least once in each of the given numbers of attempts.
 	 * @param {number} prob The probability of an outcome.
 	 * @param {number[]} steps An array of numbers of attempts to calculate overall probabilities for.*/
@@ -12,7 +12,7 @@ var HatchCalc = HatchCalc || (function(){
 		}
 		return result;
 	}
-	
+
 	/** Returns the probability of an outcome with the given probability occurring at least once in the given number of attempts.
 	 * @param {number} prob The probability of an outcome.
 	 * @param {number} attempts The number of attempts to calculate overall probability for.*/
@@ -20,7 +20,7 @@ var HatchCalc = HatchCalc || (function(){
 		const lossProb = 1-prob;
 		return 1-(lossProb**attempts);
 	}
-	
+
 	/** Calculates a weighted average from a list of values and their weights.
 	 * @param {number} values The values to average.
 	 * @param {number} weights The weights of the values. Must sum to 1.*/
@@ -31,7 +31,7 @@ var HatchCalc = HatchCalc || (function(){
 		}
 		return result;
 	}
-	
+
 	/** Returns the probability of the goal breed occurring, given the parent breeds; or an error message if the probability can't be calculated.*/
 	function breedProbability(parent1, parent2, goal){
 		if ( !FRdata.areBreedsCompatible(parent1.breed, parent2.breed) ){
@@ -40,13 +40,13 @@ var HatchCalc = HatchCalc || (function(){
 		if (goal.breed === "any") {
 			return 1;
 		}
-		
+
 		if (goal.breed !== parent1.breed && goal.breed !== parent2.breed){
 			return ["Hatchling breed is not one of the parents' breeds."];
 		}
 		return FRdata.calcRarityProb(FRdata.breeds, parent1.breed, parent2.breed, goal.breed);
 	}
-	
+
 	/** Returns the probability of the goal eyes occurring.*/
 	function eyeProbability(goal){
 		// TODO error check
@@ -55,7 +55,7 @@ var HatchCalc = HatchCalc || (function(){
 		}
 		return FRdata.eyes[goal.eye].probability;
 	}
-	
+
 	/** Returns the probability of the goal colours occurring, given the parent colourss; or error messages if the probability can't be calculated.*/
 	function colourProbability(parent1, parent2, goal){
 		var errs = [];
@@ -75,7 +75,7 @@ var HatchCalc = HatchCalc || (function(){
 		}
 		return 1/denominator;
 	}
-	
+
 	/** Returns the probability of the goal genes occurring, given the parent genes; or error messages if the probability can't be calculated.*/
 	function geneProbability(parent1, parent2, goal){
 		var errs = [];
@@ -95,17 +95,17 @@ var HatchCalc = HatchCalc || (function(){
 		}
 		return n;
 	}
-	
+
 	/** Returns the probability of the goal gender occurring.*/
 	function genderProbability(goal){
 		if (goal.gender === "any") {
 			return 1;
 		}
 		return 0.5;
-	}	
-	
+	}
+
 	/** Calculates the overall probability of a goal hatchling occurring given the properties of the two parents, as well as tables of expected probabilities within several attempts, and probabilities of success in individual properties. */
-	function getHatchlingReport(parent1, parent2, goal){		
+	function getHatchlingReport(parent1, parent2, goal){
 		var overall = 1,
 			err = [],
 			prob = {
@@ -115,7 +115,7 @@ var HatchCalc = HatchCalc || (function(){
 				eye: eyeProbability(goal),
 				gender: genderProbability(goal),
 			};
-		
+
 		for(const key in prob){
 			if (prob[key] instanceof Array) {
 				err.push(...prob[key]);
@@ -123,43 +123,44 @@ var HatchCalc = HatchCalc || (function(){
 			}
 			overall *= prob[key];
 		}
+
+		if (err.length > 0) {
+			return {err: err};
+		}
+
 		prob.overall = overall;
-		prob.err = err;
-		
+
 		// table of the chance of hatching the goal within X eggs
 		prob.egg_table = chanceTable(prob.overall, [1, 5, 10, 20, 50, 100]);
-		
+
 		// average nest size, and rough probability of hatching the goal in each nest
 		const nestSizes = FRdata.nestSizesForBreeds(parent1.breed, parent2.breed);
 		prob.avg_nest_size = weightedMean(nestSizes.map((x) => x.eggs), nestSizes.map((x) => x.probability));
 		prob.per_nest = probInAttempts(prob.overall, prob.avg_nest_size);
-		
+
 		// table of the chance of hatching the goal within X nests
 		prob.nest_table = chanceTable(prob.per_nest, [1, 5, 10, 20, 50, 100]);
-		
+
 		return prob;
 	}
-	
+
 	/** Turns a chance table into rows for an HTML table.*/
 	function formatChanceTable(table) {
 		var out = "";
 		for (var i = 0; i < table.length; i++){
 			const chance = (table[i][1] >= 0.999) ? "~100%"
 							: (table[i][1]*100).toFixed(2) + "%";
-			out += 
-				`<tr>
-					<td>${table[i][0]}</td>
-					<td>${chance}</td>
-				</tr>`;
+			out +=
+				`\n<tr><td>${table[i][0]}</td><td>${chance}</td></tr>`;
 		}
 		return out;
 	}
-	
+
 	/**Converts a probability report object calculated by getHatchlingReport() into readable HTML*/
 	function formatHatchlingReport(result) {
-		if (result.err.length > 0) {
+		if (result.err) {
 			return `
-				<div class="placeholder">
+				<div id="placeholder">
 					<p>That hatchling is impossible with the given parents!</p>
 					<ul>
 						<li>${result.err.join("</li>\n\t\t<li>")}</li>
@@ -172,22 +173,22 @@ var HatchCalc = HatchCalc || (function(){
 		return `
 			<div id="overview">
 				<p>This pair will produce a Goal hatchling ${percent(result.overall)} of the time, or 1 out of every ${inverse(result.overall)} eggs.</p>
-			
+
 				<p>Each nest will have an average of ${round(result.avg_nest_size)} eggs. This means each nest has a ${percent(result.per_nest)} chance of producing a Goal hatchling, or 1 out of every ${inverse(result.per_nest)} nests.</p>
 			</div>
-			
+
 			<table id="egg-table">
 				<caption>Chance of hatching Goal within X eggs:</caption>
 				<tr><th>Eggs</th><th>Chance</th></tr>
 				${formatChanceTable(result.egg_table)}
 			</table>
-		
+
 			<table id="nest-table">
 				<caption>Chance of hatching Goal within X nests:</caption>
 				<tr><th>Nests</th><th>Chance</th></tr>
 				${formatChanceTable(result.nest_table)}
 			</table>
-		
+
 			<table id="attrs-table">
 				<caption>Chances of a hatchling with X matching the Goal:</caption>
 				<tr><th>Attribute</th><th>Chance</th></tr>
@@ -200,10 +201,10 @@ var HatchCalc = HatchCalc || (function(){
 
 
 	return {
-		
+
 		getHatchlingReport: getHatchlingReport,
 		formatHatchlingReport: formatHatchlingReport
-		
+
 	};
 
 }());

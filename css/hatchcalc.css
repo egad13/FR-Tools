@@ -39,6 +39,9 @@ fieldset>select.colour {
 fieldset>select.gene {
 	grid-column: c 3 / span 2;
 }
+select {
+	/**/width: 110px;/**/
+}
 
 main>section {
 	flex: 1 1;
