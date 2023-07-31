@@ -11,13 +11,13 @@ form {
 fieldset {
 	padding: 0;
 	display: grid;
-	grid-template-columns: [pad-start] 0px [start] min-content repeat(4, [c] 1fr) [end] 0px [pad-end];
-	grid-template-rows: min-content repeat(4, 1fr) 0px;
+	grid-template-columns: [pad-start] 0 [start] min-content repeat(4, [c] 1fr) [end] 0 [pad-end];
+	grid-template-rows: min-content repeat(4, 1fr) 0;
 	column-gap: var(--standard-gap);
-	row-gap: var(--standard-gap);
+	row-gap: calc(var(--standard-gap)/1.5);
 }
 fieldset#hatchling {
-	grid-template-rows: min-content repeat(6, 1fr) 0px;
+	grid-template-rows: min-content repeat(6, 1fr) 0;
 }
 fieldset>legend {
 	float:left;
@@ -40,7 +40,7 @@ fieldset>select.gene {
 	grid-column: c 3 / span 2;
 }
 select {
-	/**/width: 110px;/**/
+	width: 8.3em;
 }
 
 main>section {
@@ -49,7 +49,7 @@ main>section {
 	grid-template-columns: 100%;
 	grid-template-rows: repeat(2, min-content);
 	row-gap: var(--standard-gap);
-	min-width: 340px;
+	min-width: 26em;
 }
 #results {
 	padding: var(--standard-gap) var(--standard-gap) calc(var(--standard-gap)*2);

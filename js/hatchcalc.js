@@ -1,6 +1,6 @@
 
 /** A Breeding probability calculator. Relies on the FRdata namespace being available.*/
-var HatchCalc = HatchCalc || (function(){
+const HatchCalc = (function () {
 
 	/////////////////////////////////////////////////////
 	///////////////// GENERAL FUNCTIONS /////////////////
@@ -38,7 +38,7 @@ var HatchCalc = HatchCalc || (function(){
 
 
 	/////////////////////////////////////////////////////
-	///////// HATCHLING ATTRIBUTE PROBABILITIES /////////
+	/////////// HATCHLING TRAIT PROBABILITIES ///////////
 	/////////////////////////////////////////////////////
 
 	/** Returns the probability of the goal breed occurring, given the parent breeds; or an error message if the probability can't be calculated.*/
@@ -216,8 +216,8 @@ var HatchCalc = HatchCalc || (function(){
 			</table>
 
 			<table id="attrs-table">
-				<caption>Chances of a hatchling with X matching the Goal:</caption>
-				<tr><th>Attribute</th><th>Chance</th></tr>
+				<caption>Chances of a hatchling with desired X:</caption>
+				<tr><th>Trait</th><th>Chance</th></tr>
 				<tr><td>Breed</td><td>${percent(result.breed)}</td></tr>
 				<tr><td>Eye type</td><td>${percent(result.eye)}</td></tr>
 				<tr><td>Colours</td><td>${percent(result.colour)}</td></tr>
@@ -225,12 +225,9 @@ var HatchCalc = HatchCalc || (function(){
 			</table>`;
 	}
 
-
 	return {
-
 		getHatchlingReport: getHatchlingReport,
 		formatHatchlingReport: formatHatchlingReport
-
 	};
 
 }());

@@ -35,7 +35,7 @@ html {
 }
 body {
 	min-width: min-content;
-	max-width: 950px;
+	max-width: 68em;
 	margin: 0;
 }
 header, footer {
@@ -100,8 +100,8 @@ tr:nth-child(2n+1) {
 /* || Typography */
 
 html {
-	font-family: sans-serif;
-	font-size: 14px;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 0.85em;
 	text-align: center;
 }
 header {
