@@ -1,5 +1,6 @@
 
-/** A number of generally useful functions. */
+/** Some handy general functions and shorthands for DOM manipulation.
+ * @module Util */
 var Util = Util || (function(){
 
 	// Some aliases/shorthands for basic dom searching/manipulation
@@ -52,18 +53,19 @@ var Util = Util || (function(){
 		elem.addEventListener(type, handler, ((type == 'touchstart' || type == 'mousewheel') ? { passive: true } : false));
 	}
 
-	/** Determines whether text displayed on the given (hex) background
-	* colour should be white or black in order to be easiest to read. */
-	function textColourForBg(color) {
+	/** Determines whether text placed on the given background colour should be black or white for readability.
+	 * @returns {string} Whichever of the hex colour codes "000" or "fff" is the easier to read text colour when placed on the given background colour.
+	 * @param {string} bgHex Background colour. A non-prefixed 6-digit hex colour code. */
+	function textColourForBg(bgHex) {
 		var r, g, b, hsp;
 
 		// Convert to RGB
-		color = +("0x" + color);
-		r = color >> 16;
-		g = color >> 8 & 255;
-		b = color & 255;
+		bgHex = +("0x" + bgHex);
+		r = bgHex >> 16;
+		g = bgHex >> 8 & 255;
+		b = bgHex & 255;
 
-		// HSP equation from http://alienryderflex.com/hsp.html
+		// Perceived brightness equation from http://alienryderflex.com/hsp.html
 		hsp = Math.sqrt(
 			0.299 * (r * r) +
 			0.587 * (g * g) +
@@ -73,9 +75,9 @@ var Util = Util || (function(){
 		// Using the HSP value as the light/dark threshold, determine
 		// whether text on this bg colour should be white or black.
 		if (hsp>110) {
-			return "#000";
+			return "000";
 		}
-		return "#fff";
+		return "fff";
 	}
 
 	return {

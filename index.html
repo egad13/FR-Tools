@@ -285,7 +285,7 @@
 				const col = FRdata.colours[i];
 				elt.add(Util.createElt("option", {
 					value: i, text: col.name,
-					style: `background:#${col.hex};color:${Util.textColourForBg(col.hex)}`
+					style: `background:#${col.hex};color:#${Util.textColourForBg(col.hex)}`
 				}));
 			}
 		}
@@ -302,12 +302,12 @@
 		function collectDragonSelects(id){
 			var res = {
 				breed: Util.query(`#${id} .breed`),
-				colours: {
+				colour: {
 					primary: Util.query(`#${id} .primary.colour`),
 					secondary: Util.query(`#${id} .secondary.colour`),
 					tertiary: Util.query(`#${id} .tertiary.colour`)
 				},
-				genes: {
+				gene: {
 					primary: Util.query(`#${id} .primary.gene`),
 					secondary: Util.query(`#${id} .secondary.gene`),
 					tertiary: Util.query(`#${id} .tertiary.gene`)
