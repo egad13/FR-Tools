@@ -1,6 +1,8 @@
-
+# FR Hatchling Probability Calculator
 
 This is a tool to help expedite a tedious task for players of [Flight Rising](https://www1.flightrising.com/): planning out breeding projects.
+
+Input the colours, genes, and other traits of a pair of parents and a hatchling you hope to get from them, and instantly receive a detailed report telling you how likely that pair is to produce that hatchling! Save yourself ages of difficult math trying to gauge if a pair of dragons will spit out the hatchling you want within your lifetime and get back to the fun stuff.
 
 ## Deployments
 
@@ -8,9 +10,8 @@ This is a tool to help expedite a tedious task for players of [Flight Rising](ht
 
 
 
-Input the colours, genes, and other traits of a pair of parents and a hatchling you hope to get from them, and instantly receive a detailed report telling you how likely that pair is to produce that hatchling! Save yourself ages of difficult math trying to gauge if a pair of dragons will spit out the hatchling you want within your lifetime and get back to the fun stuff.
 
-#### Road Map:
+## Road Map
 
 * *Colour ranges in the goal:* Pick a range for each of the Hatchling's colours and calculate the probability of getting any colour in that range instead.
 * *Auto-fill:* Copy and paste the contents of a dragon's Physical Attributes tab into a box, hit a button, and have the associated parent section filled for you automatically.
