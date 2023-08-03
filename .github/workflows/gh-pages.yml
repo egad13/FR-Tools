@@ -43,7 +43,7 @@ jobs:
           config_file: ./.jsdoc/conf.json
       # Minify source
       - name: Minify source code
-        uses: anthonyftwang/minify-action@v1.0.1
+        uses: dra1ex/minify-action@v1.0.3
       # Push to gh-pages branch
       - name: Push to gh-pages branch
         uses: stefanzweifel/git-auto-commit-action@v4
