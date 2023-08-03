@@ -45,17 +45,17 @@ jobs:
       - name: Minify source code
         uses: dra1ex/minify-action@v1.0.3
       # Push to gh-pages branch
-      - name: Push to gh-pages branch
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: Minify source code, generate docs
-          branch: gh-pages
+      #- name: Push to gh-pages branch
+      #  uses: stefanzweifel/git-auto-commit-action@v4
+      #  with:
+      #    commit_message: Minify source code, generate docs
+      #    branch: gh-pages
 
       # Build site from gh-pages branch
-      - name: Checkout gh-pages
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
+      #- name: Checkout gh-pages
+      #  uses: actions/checkout@v3
+      #  with:
+      #    ref: gh-pages
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Build with Jekyll
