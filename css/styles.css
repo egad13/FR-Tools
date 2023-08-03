@@ -3,6 +3,7 @@
 
 :root {
 	--crimson: #721c09;
+	--orange: #b0734f;
 	--gold: #e7cb9e;
 	--off-white: #f7f6f2;
 	--dark-gray: #404040;
@@ -45,12 +46,27 @@ header>h1,
 h2 {
 	margin: 0;
 }
+nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: start;
+}
+nav a {
+	padding: .8em 2em;
+	display: block;
+}
 main {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	gap: calc(var(--standard-gap)*3) var(--standard-gap);
 	padding: var(--standard-gap);
+}
+main section {
+	max-width: 50em;
+}
+code {
+	padding: .1em .2em;
 }
 button {
 	padding: var(--standard-gap);
@@ -80,8 +96,22 @@ header, footer {
 	background: var(--crimson);
 	color: var(--gold);
 }
+nav {
+	background: var(--dark-gray);
+	border-top: 1px solid var(--gold);
+}
+header a, header a:visited, header a:hover,
+nav a, nav a:visited, nav a:hover,
 footer a, footer a:visited, footer a:hover {
 	color: var(--gold);
+}
+main a {
+	color: var(--orange);
+	font-weight: bold;
+	text-decoration: none;
+}
+code {
+	background: var(--off-white);
 }
 td, th {
 	border: 1px solid var(--dark-gray);
@@ -107,8 +137,22 @@ html {
 header {
 	text-align: left;
 }
+header>span {
+	font-size: 110%;
+	font-weight: bold;
+}
+nav .current-page a {
+	text-decoration: none;
+	font-weight: bold;
+}
+main section {
+	text-align: left;
+}
 footer {
 	font-style: italic;
+}
+code {
+	font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
 button {
 	font-size: 110%;
