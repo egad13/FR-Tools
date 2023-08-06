@@ -2,35 +2,22 @@
 
 <html lang="en">
 <head>
-	<meta charset="utf-8">
+	<script type="text/javascript" src="../js/common_setup.js"></script>
 
 	<title>Hatchling Probability Calculator - Kay's FR Tools</title>
+	<meta charset="utf-8">
 	<meta name="description" content="Hatchling Probability Calculator">
 	<meta name="author" content="egad13">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<!-- Attempt to make github pages not cache things, so updates go through immediately. -->
-	<meta http-equiv='cache-control' content='no-cache'>
-	<meta http-equiv='expires' content='0'>
-	<meta http-equiv='pragma' content='no-cache'>
-
 	<link rel="stylesheet" href="../css/styles.css" />
-	<link rel="stylesheet" href="../css/hatchcalc.css" />
 
+	<link rel="stylesheet" href="../css/hatchcalc.css" />
 	<script type="module" src="../js/hatchcalc/controller.js"></script>
 
 </head>
 
 <body>
-
-<header>
-	<span><a href="../">Kay's Flight Rising Tools</a></span>
-	<h1>Hatchling Probability Calculator</h1>
-</header>
-<nav>
-	<span><a href="../">About</a></span>
-	<span class="current-page"><a href="./">Hatchling Calculator</a></span>
-</nav>
 
 <main>
 
@@ -107,42 +94,67 @@
 				<option value="f">Female</option>
 			</select>
 
-			<span>Primary:</span>
-			<label for="h-c1" class="sr-only">Primary Colour</label>
-			<select class="primary colour" id="h-c1">
-				<option value="any" selected="selected">Any</option>
-			</select>
+			<div class="check-wrapper">
+				<input type="checkbox" id="use-ranges" name="use-ranges" />
+				<label for="use-ranges">Use colour ranges</label>
+			</div>
+
+			<span class="pri-span">Primary:</span>
+			<div class="range-wrapper">
+				<label for="h-c1" class="sr-only">Primary Colour</label>
+				<select class="primary colour" id="h-c1">
+					<option value="any" selected="selected">Any</option>
+				</select>
+
+				<span class="colour-range">to</span>
+				
+				<label class="sr-only colour-range" for="h-c1r">Primary Colour 2</label>
+				<select class="primary colour-range" id="h-c1r" disabled>
+					<option value="" selected="selected">---</option>
+				</select>
+			</div>
 			<label for="h-g1" class="sr-only">Primary Gene</label>
 			<select class="primary gene" id="h-g1">
 				<option value="any" selected="selected">Any</option>
 			</select>
 
-			<span>Secondary:</span>
-			<label for="h-c2" class="sr-only">Secondary Colour</label>
-			<select class="secondary colour" id="h-c2">
-				<option value="any" selected="selected">Any</option>
-			</select>
+			<span class="sec-span">Secondary:</span>
+			<div class="range-wrapper">
+				<label for="h-c2" class="sr-only">Secondary Colour</label>
+				<select class="secondary colour" id="h-c2">
+					<option value="any" selected="selected">Any</option>
+				</select>
+
+				<span class="colour-range">to</span>
+
+				<label for="h-c2r" class="sr-only colour-range">Secondary Colour 2</label>
+				<select class="secondary colour-range" id="h-c2r" disabled>
+					<option value="" selected="selected">---</option>
+				</select>
+			</div>
 			<label for="h-g2" class="sr-only">Secondary Gene</label>
 			<select class="secondary gene" id="h-g2">
 				<option value="any" selected="selected">Any</option>
 			</select>
 
-			<span>Tertiary:</span>
-			<label for="h-c3" class="sr-only">Tertiary Colour</label>
-			<select class="tertiary colour" id="h-c3">
-				<option value="any" selected="selected">Any</option>
-			</select>
+			<span class="ter-span">Tertiary:</span>
+			<div class="range-wrapper">
+				<label for="h-c3" class="sr-only">Tertiary Colour</label>
+				<select class="tertiary colour" id="h-c3">
+					<option value="any" selected="selected">Any</option>
+				</select>
+
+				<span class="colour-range">to</span>
+
+				<label for="h-c3r" class="sr-only colour-range">Tertiary Colour 2</label>
+				<select class="tertiary colour-range" id="h-c3r" disabled>
+					<option value="" selected="selected">---</option>
+				</select>
+			</div>
 			<label for="h-g3" class="sr-only">Tertiary Gene</label>
 			<select class="tertiary gene" id="h-g3">
 				<option value="any" selected="selected">Any</option>
 			</select>
-
-			<!-- TODO colour ranges
-			<input type="radio" name="ranges" id="range-no" checked />
-			<label>Specific Colours</label><br>
-			<input type="radio" name="ranges" id="range-yes" />
-			<label>Colour Ranges</label>
-			 -->
 
 		</fieldset>
 
@@ -161,14 +173,6 @@
 
 </main>
 
-
-<footer>
-	<span><a href="https://github.com/egad13/FR-Tools">Source code</a></span>
-	|
-	<span>Last updated: <time datetime="2023-08-01">3 August 2023</time></span>
-</footer>
-
-	<!-- TODO add credits for where you got your dataaaaaaaa -->
 
 </body>
 </html>

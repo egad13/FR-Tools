@@ -1,55 +1,18 @@
 /**
- * The controller and entry point for the Hatchling Probability Calculator. Sets up event listeners for HatchCalcView and populates its form fields. Coordinates data transfer between the view and the models HatchCalcModel and FRdata.
- * @module HatchCalcController
- * @requires module:HatchCalcModel
- * @requires module:HatchCalcView
- * @requires module:FRdata
- * @requires module:DOMutils
+ * The controller and entry point for the Hatchling Probability Calculator. Sets up event listeners for the view and populates its form fields. Coordinates data transfer between the view and the model.
+ * @module hatchcalc
+ * @requires module:hatchcalc/model
+ * @requires module:hatchcalc/view
+ * @requires module:frdata
+ * @requires module:domutils
  * @author egad13
  * @version 0.0.1
  */
 
-import * as HC from "./model.js";
 import * as V from "./view.js";
-import { eyes, breeds, colours, areBreedsCompatible, genesForBreed } from "../frdata.js";
+import * as HC from "./model.js";
+import * as FR from "../frdata.js";
 import { triggerEvt, createElt, textColourForBg } from "../domutils.js";
-
-
-/////////////////////////////////////////////////////
-// CLASSES
-/////////////////////////////////////////////////////
-
-/** Represents one dragon's traits. Used to translate {@link module:HatchCalcView.DragonSelects} objects into data that {@link module:HatchCalcModel.getHatchlingReport} understands. */
-class DragonTraits {
-	/** Convert a collection of select elements describing a dragon into a structured object containing their current values.
-	 * @param {module:HatchCalcView.DragonSelects} selects A collection of form elements to convert. */
-	constructor(selects) {
-		/** The dragon's breed. Index of a breed in {@link module:FRdata.breeds}.
-		 * @type {number} */
-		this.breed = selects.breed.value;
-		/** The dragon's eye type. Index of an eye type in {@link module:FRdata.eyes}.
-		 * @type {number|undefined} */
-		this.eye = selects.eye?.value;
-		/** The dragon's gender. Either "m" for "male" or "f" for "female".
-		 * @type {"m"|"f"|undefined} */
-		this.gender = selects.gender?.value;
-
-		/** The dragon's colours, organized by slot. Indexes in {@link module:FRdata.colours}. Object structure: `{ primary: number, secondary: number, tertiary: number }`
-		 @type {{primary:number, secondary:number, tertiary:number}} */
-		this.colour = {
-			primary: selects.colour.primary.value,
-			secondary: selects.colour.secondary.value,
-			tertiary: selects.colour.tertiary.value
-		};
-		/** The dragon's genes, organized by slot. Indexes in {@link module:FRdata.genes.primary}, {@link module:FRdata.genes.secondary}, {@link module:FRdata.genes.tertiary}. Object structure: `{ primary: number, secondary: number, tertiary: number }`
-		 * @type {{primary:number, secondary:number, tertiary:number}} */
-		this.gene = {
-			primary: selects.gene.primary.value,
-			secondary: selects.gene.secondary.value,
-			tertiary: selects.gene.tertiary.value
-		};
-	}
-}
 
 
 /////////////////////////////////////////////////////
@@ -58,29 +21,27 @@ class DragonTraits {
 
 V.calcBtn.addEventListener("click", () => {
 	const report = HC.getHatchlingReport(
-		new DragonTraits(V.parent1),
-		new DragonTraits(V.parent2),
-		new DragonTraits(V.goal)
+		V.parent1.getValues(), V.parent2.getValues(), V.goal.getValues()
 	);
 	console.log(report);
-	V.resultElt.innerHTML = HC.formatHatchlingReport(report);
+	V.displayReport(report);
 });
 
-// Breed dropdowns - cause gene dropdowns to repopulate on change.
+// Breed dropdowns - cause gene dropdowns to repopulate on change
 // Closure here because prevX variables and repopulateGenes aren't relevant anywhere else
 (function () {
 	let prevP1, prevP2, prevH;
 
 	/** Repopulates a dragon's gene dropdowns based on its current breed.
-	 * @param {V.DragonSelects} dragon
+	 * @param {module:hatchcalc/view~DragonFields} dragon
 	 * @param {number} prevBreed */
 	function repopulateGenes(dragon, prevBreed) {
 		const breed = (dragon.breed.value !== "any" ? dragon.breed.value : undefined);
-		if (breed && areBreedsCompatible(breed, prevBreed)) {
+		if (breed && FR.areBreedsCompatible(breed, prevBreed)) {
 			return;
 		}
 
-		const isHatch = dragon.isHatchling();
+		const isHatch = dragon instanceof V.GoalFields;
 
 		for (const [slot, dropdown] of Object.entries(dragon.gene)) {
 			const oldGene = (dropdown.options.length === 0 ? -1 : dropdown.value);
@@ -90,7 +51,7 @@ V.calcBtn.addEventListener("click", () => {
 				dropdown.remove(i);
 			}
 
-			for (const gene of genesForBreed(slot, breed)) {
+			for (const gene of FR.genesForBreed(slot, breed)) {
 				if (gene.index == oldGene) {
 					oldGeneIdx = dropdown.length;
 				}
@@ -127,8 +88,8 @@ V.calcBtn.addEventListener("click", () => {
 /////////////////////////////////////////////////////
 
 // Hatchling eye type
-for (let i = 0; i < eyes.length; i++) {
-	V.goal.eye.add(createElt("option", { value: i, text: eyes[i].name }));
+for (let i = 0; i < FR.eyes.length; i++) {
+	V.goal.eye.add(createElt("option", { value: i, text: FR.eyes[i].name }));
 }
 
 // Breeds
@@ -136,9 +97,9 @@ for (const elt of [V.parent1.breed, V.parent2.breed, V.goal.breed]) {
 	const modern = createElt("optgroup", { label: "Modern" }),
 		ancient = createElt("optgroup", { label: "Ancient" });
 
-	for (let i = 0; i < breeds.length; i++) {
-		const opt = createElt("option", { value: i, text: breeds[i].name });
-		if (breeds[i].type === "M") {
+	for (let i = 0; i < FR.breeds.length; i++) {
+		const opt = createElt("option", { value: i, text: FR.breeds[i].name });
+		if (FR.breeds[i].type === "M") {
 			modern.append(opt);
 		} else {
 			ancient.append(opt);
@@ -149,11 +110,11 @@ for (const elt of [V.parent1.breed, V.parent2.breed, V.goal.breed]) {
 }
 
 // Colours
-for (const elt of [...Object.values(V.parent1.colour), ...Object.values(V.parent2.colour), ...Object.values(V.goal.colour)]) {
-	for (let i = 0; i < colours.length; i++) {
+for (const elt of [...Object.values(V.parent1.colour), ...Object.values(V.parent2.colour), ...Object.values(V.goal.colour), ...Object.values(V.goal.colour_range)]) {
+	for (let i = 0; i < FR.colours.length; i++) {
 		elt.add(createElt("option", {
-			value: i, text: colours[i].name,
-			style: `background:#${colours[i].hex};color:#${textColourForBg(colours[i].hex)}`
+			value: i, text: FR.colours[i].name,
+			style: `background:#${FR.colours[i].hex};color:#${textColourForBg(FR.colours[i].hex)}`
 		}));
 	}
 }

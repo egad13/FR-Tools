@@ -1,5 +1,21 @@
+/*
+	FR Tools HatchCalc Stylesheet
 
-/* || Layout */
+	Layout and colours specific to the Hatchling Probability Calculator.
+	Organizational headings begin with ||
+
+	author: egad13
+	version: 0.0.2
+*/
+
+
+/* || General */
+
+main {
+	text-align: center;
+}
+
+/* || Form */
 
 form {
 	display: inline-grid;
@@ -15,14 +31,21 @@ fieldset {
 	grid-template-rows: min-content repeat(4, 1fr) 0;
 	column-gap: var(--standard-gap);
 	row-gap: calc(var(--standard-gap)/1.5);
-}
-fieldset#hatchling {
-	grid-template-rows: min-content repeat(6, 1fr) 0;
+	align-items: center;
+
+	border: 1px solid var(--dark-gray);
+	background: var(--off-white);
 }
 fieldset>legend {
+	font-size: 120%;
+	font-weight: bold;
+
 	float:left;
 	padding: var(--standard-gap);
 	grid-column: pad-start / pad-end;
+
+	background: var(--crimson);
+	color: var(--gold);
 }
 fieldset>label,
 fieldset>span {
@@ -39,9 +62,49 @@ fieldset>select.colour {
 fieldset>select.gene {
 	grid-column: c 3 / span 2;
 }
+
+fieldset#hatchling {
+	grid-template-rows: min-content repeat(7, min-content) 0;
+}
+.check-wrapper {
+	grid-column: c 1 / span 4;
+}
+.range-wrapper {
+	grid-row: auto / span 1;
+	grid-column: c 1 / span 2;
+	display: inline-grid;
+	grid-template-rows: auto;
+	row-gap: 0;
+}
+.colour-range {
+	display: none;
+}
+span.colour-range {
+	font-size: 70%;
+}
 select {
 	width: 8.3em;
 }
+/* Hatchling fieldset changes layout if a specific checkbox is checked */
+fieldset#hatchling.use-ranges-checked {
+	grid-template-rows: min-content repeat(10, min-content) 0;
+}
+.use-ranges-checked .range-wrapper {
+	grid-row: auto / span 2;
+	grid-template-rows: min-content min-content min-content;
+}
+.use-ranges-checked .colour-range {
+	display: initial;
+}
+.use-ranges-checked .sec-span {
+	grid-row: 8 / span 1;
+}
+.use-ranges-checked .ter-span {
+	grid-row: 10 / span 1;
+}
+
+
+/* || Results */
 
 main>section {
 	flex: 1 1;
@@ -52,11 +115,14 @@ main>section {
 	min-width: 26em;
 }
 #results {
-	padding: var(--standard-gap) var(--standard-gap) calc(var(--standard-gap)*2);
+	padding: var(--standard-gap) var(--standard-gap) var(--double-gap);
 	display: grid;
 	grid-template-columns: auto auto;
 	grid-template-rows: repeat(3, min-content);
 	gap: var(--standard-gap);
+
+	border: 1px solid var(--dark-gray);
+	background: var(--off-white);
 }
 
 #results>#placeholder {
@@ -74,30 +140,7 @@ main>section {
 #results>#nest-table {
 	grid-column: 2 / span 1;
 }
-ul {
+#results ul {
 	padding: 0;
 	list-style-position: inside;
-}
-
-/* || Colours */
-
-fieldset {
-	border: 1px solid var(--dark-gray);
-	background: var(--off-white);
-}
-fieldset>legend {
-	background: var(--crimson);
-	color: var(--gold);
-}
-
-#results {
-	border: 1px solid var(--dark-gray);
-	background: var(--off-white);
-}
-
-/* || Typography */
-
-fieldset>legend {
-	font-size: 120%;
-	font-weight: bold;
 }
