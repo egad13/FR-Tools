@@ -30,27 +30,4 @@ export function triggerEvt(element, eventName) {
 // MISC FUNCTIONS
 /////////////////////////////////////////////////////
 
-/** Determines whether text placed on the given background colour should be black or
- * white for the best readability.
- * @param {string} bgHex Background colour. A non-prefixed 6-digit hex colour code.
- * @returns {string} Whichever of the hex colour codes "000" or "fff" is the easier to
- * read text colour when placed on the given background colour. */
-export function textColourForBg(bgHex) {
-	// Convert to RGB
-	bgHex = +("0x" + bgHex);
-	const r = bgHex >> 16,
-		g = bgHex >> 8 & 255,
-		b = bgHex & 255;
 
-	// Perceived brightness equation from http://alienryderflex.com/hsp.html
-	const perceivedBrightness = Math.sqrt(
-		0.299 * (r * r) +
-		0.587 * (g * g) +
-		0.114 * (b * b)
-	);
-
-	if (perceivedBrightness > 110) {
-		return "000";
-	}
-	return "fff";
-}
