@@ -41,12 +41,10 @@ if (localStorage.getItem("darkmode") == "true") {
 	var done = false;
 
 	if (document.readyState !== "loading") {
-		console.log(document.readyState + "if");
 		setupCommonHTML();
 	} else {
 		document.addEventListener("readystatechange", e => {
 			if (document.readyState !== "loading") {
-				console.log(document.readyState + "evt");
 				setupCommonHTML();
 			}
 		});
@@ -76,7 +74,7 @@ if (localStorage.getItem("darkmode") == "true") {
 
 		let currentPageName;
 		for (const a of html.querySelectorAll("a")) {
-			if (a.href === window_href) {
+			if (a.href === window_href || `${a.href}index.html` === window_href) {
 				currentPageName = a.dataset.n ?? a.innerText;
 				a.className = "current-page";
 			}
