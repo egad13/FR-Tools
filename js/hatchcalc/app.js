@@ -7,6 +7,8 @@
  */
 
 import { triggerEvt } from "../domutils.js";
+import { BreedSelect, ColourSelect, EyeSelect, GeneSelect } from "../flightrising/formcontrols.js";
+import * as HC from "./calculator.js";
 
 /////////////////////////////////////////////////////
 // CLASSES
@@ -14,42 +16,42 @@ import { triggerEvt } from "../domutils.js";
 
 /** Form fields representing a dragon's traits. */
 export class DragonFields {
-	constructor(fieldsetID) {
+	constructor(fieldsetID, defaultGene = "Basic") {
 		this.fieldset = document.querySelector(`#${fieldsetID}`);
 
 		/** @type {HTMLSelectElement} */
-		this.breed = this.fieldset.querySelector(".breed");
+		this.breed = new BreedSelect(`#${fieldsetID} .breed`);
 
 		/** Object structure: `{ primary: HTMLSelectElement, secondary: HTMLSelectElement, tertiary: HTMLSelectElement }`
 		 * @type {{primary:HTMLSelectElement, secondary:HTMLSelectElement, tertiary:HTMLSelectElement}} */
 		this.colour = {
-			primary: this.fieldset.querySelector(".primary.colour"),
-			secondary: this.fieldset.querySelector(".secondary.colour"),
-			tertiary: this.fieldset.querySelector(".tertiary.colour")
+			primary: new ColourSelect(`#${fieldsetID} .primary.colour`),
+			secondary: new ColourSelect(`#${fieldsetID} .secondary.colour`),
+			tertiary: new ColourSelect(`#${fieldsetID} .tertiary.colour`)
 		};
 		
 		/** Object structure: `{ primary: HTMLSelectElement, secondary: HTMLSelectElement, tertiary: HTMLSelectElement }`
 		 * @type {{primary:HTMLSelectElement, secondary:HTMLSelectElement, tertiary:HTMLSelectElement}} */
 		this.gene = {
-			primary: this.fieldset.querySelector(".primary.gene"),
-			secondary: this.fieldset.querySelector(".secondary.gene"),
-			tertiary: this.fieldset.querySelector(".tertiary.gene")
+			primary: new GeneSelect(`#${fieldsetID} .primary.gene`, "primary", defaultGene, this.breed),
+			secondary: new GeneSelect(`#${fieldsetID} .secondary.gene`, "secondary", defaultGene, this.breed),
+			tertiary: new GeneSelect(`#${fieldsetID} .tertiary.gene`, "tertiary", defaultGene, this.breed)
 		};
 
 	}
 
-	getValues() {
+	get values() {
 		return {
-			breed: this.breed.value,
+			breed: this.breed.element.value,
 			colour: {
-				primary: this.colour.primary.value,
-				secondary: this.colour.secondary.value,
-				tertiary: this.colour.tertiary.value
+				primary: this.colour.primary.element.value,
+				secondary: this.colour.secondary.element.value,
+				tertiary: this.colour.tertiary.element.value
 			},
 			gene: {
-				primary: this.gene.primary.value,
-				secondary: this.gene.secondary.value,
-				tertiary: this.gene.tertiary.value
+				primary: this.gene.primary.element.value,
+				secondary: this.gene.secondary.element.value,
+				tertiary: this.gene.tertiary.element.value
 			}
 		};
 	}
@@ -58,10 +60,10 @@ export class DragonFields {
 /** Form fields representing a Goal dragon's traits. */
 export class GoalFields extends DragonFields {
 	constructor(fieldsetID) {
-		super(fieldsetID);
+		super(fieldsetID, "Any");
 
 		/** @type {HTMLSelectElement} */
-		this.eye = this.fieldset.querySelector(".eye");
+		this.eye = new EyeSelect(`#${fieldsetID} .eye`);
 		/** @type {HTMLSelectElement} */
 		this.gender = this.fieldset.querySelector(".gender");
 
@@ -70,22 +72,22 @@ export class GoalFields extends DragonFields {
 		/** Structure of object is `{ primary: HTMLSelectElement, secondary: HTMLSelectElement, tertiary: HTMLSelectElement }`
 		 * @type {{primary:HTMLSelectElement, secondary:HTMLSelectElement, tertiary:HTMLSelectElement}} */
 		this.colour_range = {
-			primary: this.fieldset.querySelector(".primary.colour-range"),
-			secondary: this.fieldset.querySelector(".secondary.colour-range"),
-			tertiary: this.fieldset.querySelector(".tertiary.colour-range")
+			primary: new ColourSelect(`#${fieldsetID} .primary.colour-range`),
+			secondary: new ColourSelect(`#${fieldsetID} .secondary.colour-range`),
+			tertiary: new ColourSelect(`#${fieldsetID} .tertiary.colour-range`)
 		};
 	}
 
-	getValues() {
+	get values() {
 		return {
-			...super.getValues(),
-			eye: this.eye.value,
+			...super.values,
+			eye: this.eye.element.value,
 			gender: this.gender.value,
 			use_ranges: this.use_ranges.checked,
 			colour_range: {
-				primary: this.colour_range.primary.value,
-				secondary: this.colour_range.secondary.value,
-				tertiary: this.colour_range.tertiary.value
+				primary: this.colour_range.primary.element.value,
+				secondary: this.colour_range.secondary.element.value,
+				tertiary: this.colour_range.tertiary.element.value
 			}
 		}
 	}
@@ -100,22 +102,22 @@ export class GoalFields extends DragonFields {
  * Form fields representing the first parent dragon.
  * @type {module:hatchcalc/view.DragonFields}
  */
-export const parent1 = new DragonFields("parent1");
+const parent1 = new DragonFields("parent1");
 /**
  * Form fields representing the second parent dragon.
  * @type {module:hatchcalc/view.DragonFields}
  */
-export const parent2 = new DragonFields("parent2");
+const parent2 = new DragonFields("parent2");
 /**
  * Form fields representing the goal hatchling.
  * @type {module:hatchcalc/view.GoalFields}
  */
-export const goal = new GoalFields("hatchling");
+const goal = new GoalFields("hatchling");
 
 
 /** The button that should cause the calculations to run and display results.
  * @type {HTMLButtonElement} */
-export const calcBtn = document.querySelector("#calc");
+const calcBtn = document.querySelector("#calc");
 
 const resultElt = document.querySelector("#results");
 
@@ -204,12 +206,20 @@ function formatHatchlingReport(report) {
 goal.use_ranges.addEventListener("change", (evt) => {
 	goal.fieldset.classList.toggle("use-ranges-checked", goal.use_ranges.checked);
 
-	goal.colour_range.primary.disabled = 
-	goal.colour_range.secondary.disabled = 
-	goal.colour_range.tertiary.disabled = !goal.use_ranges.checked;
+	goal.colour_range.primary.element.disabled =
+	goal.colour_range.secondary.element.disabled =
+	goal.colour_range.tertiary.element.disabled = !goal.use_ranges.checked;
 	
 });
 triggerEvt(goal.use_ranges, "change");
+
+calcBtn.addEventListener("click", () => {
+	const report = HC.getHatchlingReport(
+		parent1.values, parent2.values, goal.values
+	);
+	console.log(report);
+	displayReport(report);
+});
 
 
 //TODO some kind of graceful error message if any of the necessary elements can't be found or the structure of the document is off? Not super critical, especially for such a small project, but may be useful to make sure I don't break anything later.

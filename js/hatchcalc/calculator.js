@@ -6,7 +6,7 @@
  * @version 0.0.1
  */
 
-import * as FR from "../frdata.js";
+import * as FR from "../flightrising/data.js";
 
 /////////////////////////////////////////////////////
 ///////////////// GENERAL FUNCTIONS /////////////////
@@ -43,8 +43,6 @@ function weightedMean(values, weights) {
 		result += values[i] * weights[i];
 	}
 	return result;
-	// TODO test this experimental other way of doing it
-	return values.reduce((a, b, index) => a + (b * weights[index]));
 }
 
 
