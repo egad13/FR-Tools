@@ -43,13 +43,46 @@ focused, ie via tabbing through the document. */
 	position:absolute;
 	white-space: nowrap;
 }
+/* skip-to-main-content link that is visually hidden unless focused, ie via tabbing
+through the document. */
+#skip-to-content {
+	padding: .5em;
+	position: absolute;
+	top: -3em;
+	left: 0;
+	color: #fff;
+	background: #bf1722;
+	border-right: 1px solid #fff;
+	border-bottom: 1px solid #fff;
+	z-index: 626;
+	transition: top .1s ease;
+}
+#skip-to-content:focus {
+	top: 0;
+}
+
+/* || Animations & Transitions */
+
+/* theme toggling animates */
+body, body * {
+	transition: all .5s ease;
+}
+/* custom styled selects/buttons; snappier hover/active transition */
+select {
+	transition: all .5s ease, filter 1ms;
+}
+select:not(:hover):not(:active) {
+	transition: all .5s ease, filter .15s linear;
+}
+button, nav a {
+	transition: background-color 1ms;
+}
+button:not(:hover):not(:active), nav a:not(:hover):not(:active) {
+	transition: background-color .15s linear;
+}
 
 /* || Colour Schemes */
 
-/* theme toggling & un-hovering links/buttons/etc animates */
-body, body *:not(:hover):not(:active) {
-	transition: all .5s linear;
-}
 /* dark mode colours */
 :root.dark {
 	--crimson: #5b1607;
@@ -242,10 +275,10 @@ select {
 	border: 1px solid var(--dark-gray);
 	border-radius: .2em;
 }
-select:hover {
+select:hover:not(:disabled) {
 	filter: brightness(.8);
 }
-select:active {
+select:active:not(:disabled) {
 	filter: brightness(.6);
 }
 /* tables */

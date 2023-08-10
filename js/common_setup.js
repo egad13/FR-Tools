@@ -17,6 +17,7 @@ if (localStorage.getItem("darkmode") == "true") {
 	// A $ in the template will be replaced with the base url for this site
 	const template = `
 		<header>
+			<a id="skip-to-content" href="#main">Skip to main content</a>
 			<div>
 				<span>Kay's Flight Rising Tools</span>
 				<h1></h1>
