@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<link rel="modulepreload" href="../js/flightrising/data.js" />
-	<link rel="modulepreload" href="../js/flightrising/formcontrols.js" />
+	<script async type="module" src="../js/flightrising/forms.js"></script>
 	<script type="text/javascript" src="../js/common_setup.js"></script>
 
 	<title>Hatchling Probability Calculator - Kay's FR Tools</title>
@@ -13,9 +13,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<link rel="stylesheet" href="../css/styles.css" />
-
 	<link rel="stylesheet" href="../css/hatchcalc.css" />
-	<script type="module" src="../js/hatchcalc/app.js" async></script>
 
 </head>
 
@@ -30,62 +28,62 @@
 			<legend>Parent 1</legend>
 
 			<label for="p1-b">Breed:</label>
-			<select class="breed" id="p1-b"></select>
+			<select id="p1-b" is="fr-breeds" class="breed"></select>
 
 			<span>Primary:</span>
 			<label for="p1-c1" class="sr-only">Primary Colour</label>
-			<select class="primary colour" id="p1-c1"></select>
+			<select id="p1-c1" is="fr-colours" class="primary colour"></select>
 			<label for="p1-g1" class="sr-only">Primary Gene</label>
-			<select class="primary gene" id="p1-g1"></select>
+			<select id="p1-g1" is="fr-genes" slot="primary" breed="p1-b" class="primary gene"></select>
 
 			<span>Secondary:</span>
 			<label for="p1-c2" class="sr-only">Secondary Colour</label>
-			<select class="secondary colour" id="p1-c2"></select>
+			<select id="p1-c2" is="fr-colours" class="secondary colour"></select>
 			<label for="p1-g2" class="sr-only">Secondary Gene</label>
-			<select class="secondary gene" id="p1-g2"></select>
+			<select id="p1-g2" is="fr-genes" slot="secondary" breed="p1-b" class="secondary gene"></select>
 
 			<span>Tertiary:</span>
 			<label for="p1-c3" class="sr-only">Tertiary Colour</label>
-			<select class="tertiary colour" id="p1-c3"></select>
+			<select id="p1-c3" is="fr-colours" class="tertiary colour"></select>
 			<label for="p1-g3" class="sr-only">Tertiary Gene</label>
-			<select class="tertiary gene" id="p1-g3"></select>
+			<select id="p1-g3" is="fr-genes" slot="tertiary" breed="p1-b" class="tertiary gene"></select>
 		</fieldset>
 
 		<fieldset id="parent2">
 			<legend>Parent 2</legend>
 
 			<label for="p2-b">Breed:</label>
-			<select class="breed" id="p2-b"></select>
+			<select id="p2-b" is="fr-breeds" class="breed"></select>
 
 			<span>Primary:</span>
 			<label for="p2-c1" class="sr-only">Primary Colour</label>
-			<select class="primary colour" id="p2-c1"></select>
+			<select id="p2-c1" is="fr-colours" class="primary"></select>
 			<label for="p2-g1" class="sr-only">Primary Gene</label>
-			<select class="primary gene" id="p2-g1"></select>
+			<select id="p2-g1" is="fr-genes" slot="primary" breed="p2-b"></select>
 
 			<span>Secondary:</span>
 			<label for="p2-c2" class="sr-only">Secondary Colour</label>
-			<select class="secondary colour" id="p2-c2"></select>
+			<select id="p2-c2" is="fr-colours" class="secondary"></select>
 			<label for="p2-g2" class="sr-only">Secondary Gene</label>
-			<select class="secondary gene" id="p2-g2"></select>
+			<select id="p2-g2" is="fr-genes" slot="secondary" breed="p2-b"></select>
 
 			<span>Tertiary:</span>
 			<label for="p2-c3" class="sr-only">Tertiary Colour</label>
-			<select class="tertiary colour" id="p2-c3"></select>
+			<select id="p2-c3" is="fr-colours" class="tertiary"></select>
 			<label for="p2-g3" class="sr-only">Tertiary Gene</label>
-			<select class="tertiary gene" id="p2-g3"></select>
+			<select id="p2-g3" is="fr-genes" slot="tertiary" breed="p2-b"></select>
 		</fieldset>
 
 		<fieldset id="hatchling">
 			<legend>Hatchling</legend>
 
 			<label for="h-b">Breed:</label>
-			<select class="breed" id="h-b">
+			<select id="h-b" is="fr-breeds">
 				<option value="any" selected="selected">Any</option>
 			</select>
 
 			<label for="h-e">Eye Type:</label>
-			<select id="h-e" class="eye">
+			<select id="h-e" is="fr-eyes">
 				<option value="any" selected="selected">Any</option>
 			</select>
 
@@ -97,65 +95,67 @@
 			</select>
 
 			<div class="check-wrapper">
-				<input type="checkbox" id="use-ranges" name="use-ranges" />
-				<label for="use-ranges">Use colour ranges</label>
+				<label for="use-ranges">
+					<input type="checkbox" id="use-ranges" name="use-ranges" />
+					Use colour ranges
+				</label>
 			</div>
 
 			<span class="pri-span">Primary:</span>
 			<div class="range-wrapper">
 				<label for="h-c1" class="sr-only">Primary Colour</label>
-				<select class="primary colour" id="h-c1">
-					<option value="any" selected="selected">Any</option>
+				<select id="h-c1" is="fr-colours" class="primary">
+					<option value="any">Any</option>
 				</select>
 
 				<span class="colour-range">to</span>
 				
-				<label class="sr-only colour-range" for="h-c1r">Primary Colour 2</label>
-				<select class="primary colour-range" id="h-c1r" disabled>
-					<option value="" selected="selected">---</option>
+				<label for="h-c1r" class="sr-only colour-range">Primary Colour 2</label>
+				<select id="h-c1r" is="fr-colours" class="primary colour-range" disabled>
+					<option value="">---</option>
 				</select>
 			</div>
 			<label for="h-g1" class="sr-only">Primary Gene</label>
-			<select class="primary gene" id="h-g1">
-				<option value="any" selected="selected">Any</option>
+			<select id="h-g1" is="fr-genes" slot="primary" breed="h-b" default="Any">
+				<option value="any">Any</option>
 			</select>
 
 			<span class="sec-span">Secondary:</span>
 			<div class="range-wrapper">
 				<label for="h-c2" class="sr-only">Secondary Colour</label>
-				<select class="secondary colour" id="h-c2">
-					<option value="any" selected="selected">Any</option>
+				<select id="h-c2" is="fr-colours" class="secondary">
+					<option value="any">Any</option>
 				</select>
 
 				<span class="colour-range">to</span>
 
 				<label for="h-c2r" class="sr-only colour-range">Secondary Colour 2</label>
-				<select class="secondary colour-range" id="h-c2r" disabled>
-					<option value="" selected="selected">---</option>
+				<select id="h-c2r" is="fr-colours" class="secondary colour-range" disabled>
+					<option value="">---</option>
 				</select>
 			</div>
 			<label for="h-g2" class="sr-only">Secondary Gene</label>
-			<select class="secondary gene" id="h-g2">
-				<option value="any" selected="selected">Any</option>
+			<select id="h-g2" is="fr-genes" slot="secondary" breed="h-b" default="Any">
+				<option value="any">Any</option>
 			</select>
 
 			<span class="ter-span">Tertiary:</span>
 			<div class="range-wrapper">
 				<label for="h-c3" class="sr-only">Tertiary Colour</label>
-				<select class="tertiary colour" id="h-c3">
-					<option value="any" selected="selected">Any</option>
+				<select id="h-c3" is="fr-colours" class="tertiary">
+					<option value="any">Any</option>
 				</select>
 
 				<span class="colour-range">to</span>
 
 				<label for="h-c3r" class="sr-only colour-range">Tertiary Colour 2</label>
-				<select class="tertiary colour-range" id="h-c3r" disabled>
-					<option value="" selected="selected">---</option>
+				<select id="h-c3r" is="fr-colours" class="tertiary colour-range" disabled>
+					<option value="">---</option>
 				</select>
 			</div>
 			<label for="h-g3" class="sr-only">Tertiary Gene</label>
-			<select class="tertiary gene" id="h-g3">
-				<option value="any" selected="selected">Any</option>
+			<select id="h-g3" is="fr-genes" slot="tertiary" breed="h-b" default="Any">
+				<option value="any">Any</option>
 			</select>
 
 		</fieldset>

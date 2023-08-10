@@ -26,13 +26,14 @@ form {
 }
 fieldset {
 	padding: 0;
+	min-width: 24.3em;
+	max-width: 24.3em;
 	display: grid;
 	grid-template-columns: [pad-start] 0 [start] min-content repeat(4, [c] 1fr) [end] 0 [pad-end];
 	grid-template-rows: min-content repeat(4, 1fr) 0;
 	column-gap: var(--standard-gap);
 	row-gap: calc(var(--standard-gap)/1.5);
 	align-items: center;
-
 	border: 1px solid var(--dark-gray);
 	background: var(--off-white);
 }
@@ -51,15 +52,15 @@ fieldset>label,
 fieldset>span {
 	grid-column: start / span 1;
 }
-fieldset>select.breed,
-fieldset>select.eye,
+fieldset>select[is=fr-breeds],
+fieldset>select[is=fr-eyes],
 fieldset>select.gender {
 	grid-column: c 2 / span 2;
 }
-fieldset>select.colour {
+fieldset>select[is=fr-colours] {
 	grid-column: c 1 / span 2;
 }
-fieldset>select.gene {
+fieldset>select[is=fr-genes] {
 	grid-column: c 3 / span 2;
 }
 
@@ -83,7 +84,7 @@ span.colour-range {
 	font-size: 70%;
 }
 select {
-	width: 8.3em;
+	width: 100%;
 }
 /* Hatchling fieldset changes layout if a specific checkbox is checked */
 fieldset#hatchling.use-ranges-checked {
