@@ -6,8 +6,8 @@
  * @version 0.0.1
  */
 
+import "../flightrising/forms.js";
 import { triggerEvt } from "../domutils.js";
-import { BreedSelect, ColourSelect, EyeSelect, GeneSelect } from "../flightrising/formcontrols.js";
 import * as HC from "./calculator.js";
 
 /////////////////////////////////////////////////////
@@ -15,79 +15,70 @@ import * as HC from "./calculator.js";
 /////////////////////////////////////////////////////
 
 /** Form fields representing a dragon's traits. */
-export class DragonFields {
-	constructor(fieldsetID, defaultGene = "Basic") {
+class DragonFields {
+	constructor(fieldsetID) {
 		this.fieldset = document.querySelector(`#${fieldsetID}`);
+		const get = this.fieldset.querySelector.bind(this.fieldset);
 
-		/** @type {HTMLSelectElement} */
-		this.breed = new BreedSelect(`#${fieldsetID} .breed`);
+		this.breed = get(`[is=fr-breeds]`);
 
-		/** Object structure: `{ primary: HTMLSelectElement, secondary: HTMLSelectElement, tertiary: HTMLSelectElement }`
-		 * @type {{primary:HTMLSelectElement, secondary:HTMLSelectElement, tertiary:HTMLSelectElement}} */
 		this.colour = {
-			primary: new ColourSelect(`#${fieldsetID} .primary.colour`),
-			secondary: new ColourSelect(`#${fieldsetID} .secondary.colour`),
-			tertiary: new ColourSelect(`#${fieldsetID} .tertiary.colour`)
+			primary: get(`.primary[is="fr-colours"]`),
+			secondary: get(`.secondary[is="fr-colours"]`),
+			tertiary: get(`.tertiary[is="fr-colours"]`)
 		};
 		
-		/** Object structure: `{ primary: HTMLSelectElement, secondary: HTMLSelectElement, tertiary: HTMLSelectElement }`
-		 * @type {{primary:HTMLSelectElement, secondary:HTMLSelectElement, tertiary:HTMLSelectElement}} */
 		this.gene = {
-			primary: new GeneSelect(`#${fieldsetID} .primary.gene`, "primary", defaultGene, this.breed),
-			secondary: new GeneSelect(`#${fieldsetID} .secondary.gene`, "secondary", defaultGene, this.breed),
-			tertiary: new GeneSelect(`#${fieldsetID} .tertiary.gene`, "tertiary", defaultGene, this.breed)
+			primary: get(`[is="fr-genes"][slot="primary"]`),
+			secondary: get(`[is="fr-genes"][slot="secondary"]`),
+			tertiary: get(`[is="fr-genes"][slot="tertiary"]`)
 		};
-
 	}
 
 	get values() {
 		return {
-			breed: this.breed.element.value,
+			breed: this.breed.value,
 			colour: {
-				primary: this.colour.primary.element.value,
-				secondary: this.colour.secondary.element.value,
-				tertiary: this.colour.tertiary.element.value
+				primary: this.colour.primary.value,
+				secondary: this.colour.secondary.value,
+				tertiary: this.colour.tertiary.value
 			},
 			gene: {
-				primary: this.gene.primary.element.value,
-				secondary: this.gene.secondary.element.value,
-				tertiary: this.gene.tertiary.element.value
+				primary: this.gene.primary.value,
+				secondary: this.gene.secondary.value,
+				tertiary: this.gene.tertiary.value
 			}
 		};
 	}
 }
 
 /** Form fields representing a Goal dragon's traits. */
-export class GoalFields extends DragonFields {
+class GoalFields extends DragonFields {
 	constructor(fieldsetID) {
-		super(fieldsetID, "Any");
+		super(fieldsetID);
+		const get = this.fieldset.querySelector.bind(this.fieldset);
 
-		/** @type {HTMLSelectElement} */
-		this.eye = new EyeSelect(`#${fieldsetID} .eye`);
-		/** @type {HTMLSelectElement} */
-		this.gender = this.fieldset.querySelector(".gender");
-
-		/** @type {HTMLInputElement} */
-		this.use_ranges = this.fieldset.querySelector("#use-ranges");
-		/** Structure of object is `{ primary: HTMLSelectElement, secondary: HTMLSelectElement, tertiary: HTMLSelectElement }`
-		 * @type {{primary:HTMLSelectElement, secondary:HTMLSelectElement, tertiary:HTMLSelectElement}} */
+		this.eye = get(`[is="fr-eyes"]`);
+		this.gender = get(`.gender`);
+		this.use_ranges = get("#use-ranges");
+		
 		this.colour_range = {
-			primary: new ColourSelect(`#${fieldsetID} .primary.colour-range`),
-			secondary: new ColourSelect(`#${fieldsetID} .secondary.colour-range`),
-			tertiary: new ColourSelect(`#${fieldsetID} .tertiary.colour-range`)
+			primary: get(`.primary.colour-range`),
+			secondary: get(`.secondary.colour-range`),
+			tertiary: get(`.tertiary.colour-range`)
 		};
 	}
 
 	get values() {
 		return {
 			...super.values,
-			eye: this.eye.element.value,
+			eye: this.eye.value,
 			gender: this.gender.value,
 			use_ranges: this.use_ranges.checked,
 			colour_range: {
-				primary: this.colour_range.primary.element.value,
-				secondary: this.colour_range.secondary.element.value,
-				tertiary: this.colour_range.tertiary.element.value
+				primary: this.colour_range.primary.value,
+				secondary: this.colour_range.secondary.value,
+				tertiary: this.colour_range.tertiary.value
 			}
 		}
 	}
@@ -123,10 +114,9 @@ const resultElt = document.querySelector("#results");
 
 /** The interface for the controller to communicate output to this view. Formats the results into human-readable HTML and displays them in the page's results section.
  * @param {Object} report */
-export function displayReport(report) {
+function displayReport(report) {
 	resultElt.innerHTML = formatHatchlingReport(report);
-	resultElt.focus({ preventScroll: false, focusVisible: true });
-	resultElt.scrollIntoView(true, { behavior: "smooth" });
+	resultElt.scrollIntoView({ behavior: "smooth" });
 	document.location.hash = "hatchcalc-results";
 }
 
@@ -206,9 +196,9 @@ function formatHatchlingReport(report) {
 goal.use_ranges.addEventListener("change", (evt) => {
 	goal.fieldset.classList.toggle("use-ranges-checked", goal.use_ranges.checked);
 
-	goal.colour_range.primary.element.disabled =
-	goal.colour_range.secondary.element.disabled =
-	goal.colour_range.tertiary.element.disabled = !goal.use_ranges.checked;
+	goal.colour_range.primary.disabled =
+	goal.colour_range.secondary.disabled =
+	goal.colour_range.tertiary.disabled = !goal.use_ranges.checked;
 	
 });
 triggerEvt(goal.use_ranges, "change");
