@@ -7,13 +7,7 @@ author: egad13
 version: 0.0.2
 */
 
-// Toggle site theme, if necessary
-if (localStorage.getItem("darkmode") == "true") {
-	document.querySelector("html").classList.toggle("dark");
-}
-
-// Set up and add common header, navbar, footer
-(async function () {
+(function () {
 	// A $ in the template will be replaced with the base url for this site
 	const template = `
 		<header>
@@ -41,6 +35,12 @@ if (localStorage.getItem("darkmode") == "true") {
 	const prep_template = prepCommonHTML();
 	var done = false;
 
+	// Toggle site theme, if necessary
+	if (localStorageGet("darkmode") == "true") {
+		document.querySelector("html").classList.toggle("dark");
+	}
+
+	// Add common header+footer
 	if (document.readyState !== "loading") {
 		setupCommonHTML();
 	} else {
@@ -85,10 +85,30 @@ if (localStorage.getItem("darkmode") == "true") {
 		html.querySelector("#theme").addEventListener("click", e => {
 			const el = document.querySelector("html");
 			el.classList.toggle("dark");
-			localStorage.setItem("darkmode", el.classList.contains("dark"));
+			localStorageSet("darkmode", el.classList.contains("dark"));
 		});
 
 		return html;
+	}
+
+	// Catches errors when getting/setting localStorage, so that if the feature is
+	// unavailable for any reason the script doesn't fail to add the common HTML. Useful,
+	// for example, if a user is blocking all cookies in Safari, which disables
+	// localStorage altogether.
+	function localStorageGet(key) {
+		try {
+			return localStorage.getItem(key);
+		} catch(e) {
+			console.error(e);
+			return null;
+		}
+	}
+	function localStorageSet(key, val) {
+		try {
+			localStorage.setItem(key, val);
+		} catch(e) {
+			console.error(e);
+		}
 	}
 
 })();
