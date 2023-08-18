@@ -63,17 +63,14 @@ through the document. */
 
 /* || Animations & Transitions */
 
-/* theme toggling animates */
-body, body * {
-	transition: all .5s ease;
+/* theme toggling animates
+   filter rule disables animation for custom-styled selects */
+body {
+	transition: background-color .5s ease,
+				color .5s ease,
+				filter 1ms;
 }
-/* custom styled selects/buttons; snappier hover/active transition */
-select {
-	transition: all .5s ease, filter 1ms;
-}
-select:not(:hover):not(:active) {
-	transition: all .5s ease, filter .15s linear;
-}
+/* snappier hover/active transition on buttons */
 button, nav a {
 	transition: background-color 1ms;
 }
