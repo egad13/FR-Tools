@@ -27,7 +27,7 @@ class DragonFields {
 			secondary: get(`.secondary[is="fr-colours"]`),
 			tertiary: get(`.tertiary[is="fr-colours"]`)
 		};
-		
+
 		this.gene = {
 			primary: get(`[is="fr-genes"][slot="primary"]`),
 			secondary: get(`[is="fr-genes"][slot="secondary"]`),
@@ -60,9 +60,9 @@ class GoalFields extends DragonFields {
 
 		this.eye = get(`[is="fr-eyes"]`);
 		this.gender = get(`.gender`);
-		this.use_ranges = get("#use-ranges");
-		
-		this.colour_range = {
+		this.useRanges = get("#use-ranges");
+
+		this.colourRange = {
 			primary: get(`.primary.colour-range`),
 			secondary: get(`.secondary.colour-range`),
 			tertiary: get(`.tertiary.colour-range`)
@@ -74,13 +74,13 @@ class GoalFields extends DragonFields {
 			...super.values,
 			eye: this.eye.value,
 			gender: this.gender.value,
-			use_ranges: this.use_ranges.checked,
-			colour_range: {
-				primary: this.colour_range.primary.value,
-				secondary: this.colour_range.secondary.value,
-				tertiary: this.colour_range.tertiary.value
+			useRanges: this.useRanges.checked,
+			colourRange: {
+				primary: this.colourRange.primary.value,
+				secondary: this.colourRange.secondary.value,
+				tertiary: this.colourRange.tertiary.value
 			}
-		}
+		};
 	}
 }
 
@@ -121,7 +121,6 @@ function displayReport(report) {
 }
 
 
-
 /////////////////////////////////////////////////////
 // RESULTS FORMATTING
 /////////////////////////////////////////////////////
@@ -130,12 +129,11 @@ function displayReport(report) {
  * @param {number[][]} table
  * @private */
 function formatChanceTable(table) {
-	var out = "";
-	for (var i = 0; i < table.length; i++) {
+	let out = "";
+	for (let i = 0; i < table.length; i++) {
 		const chance = (table[i][1] >= 0.999) ? "~100%"
-			: (table[i][1] * 100).toFixed(2) + "%";
-		out +=
-			`\n<tr><td>${table[i][0]}</td><td>${chance}</td></tr>`;
+			: `${(table[i][1] * 100).toFixed(2)}%`;
+		out += `\n<tr><td>${table[i][0]}</td><td>${chance}</td></tr>`;
 	}
 	return out;
 }
@@ -154,28 +152,28 @@ function formatHatchlingReport(report) {
 					</ul>
 				</div>`;
 	}
-	const percent = (x) => (x * 100).toFixed(2) + "%",
+	const percent = (x) => `${(x * 100).toFixed(2)}%`,
 		inverse = (x) => (1 / x).toFixed(2),
 		round = (x) => x.toFixed(2);
 	return `
 		<div id="overview">
-			<p>Each egg from this pair will produce a Goal hatchling ${percent(report.per_egg)} of the time; that's 1 out of every ${inverse(report.per_egg)} eggs.</p>
+			<p>Each egg from this pair will produce a Goal hatchling ${percent(report.perEgg)} of the time; that's 1 out of every ${inverse(report.perEgg)} eggs.</p>
 
-			<p>Each nest from this pair will contain at least one Goal hatchling ${percent(report.per_nest)} of the time; that's 1 out of every ${inverse(report.per_nest)} nests.</p>
+			<p>Each nest from this pair will contain at least one Goal hatchling ${percent(report.perNest)} of the time; that's 1 out of every ${inverse(report.perNest)} nests.</p>
 
-			<p>There will be an average of ${round(report.avg_nest_size)} eggs per nest.</p>
+			<p>There will be an average of ${round(report.avgNestSize)} eggs per nest.</p>
 		</div>
 
 		<table id="egg-table">
 			<caption>Chance of hatching Goal within X eggs:</caption>
 			<tr><th>Eggs</th><th>Chance</th></tr>
-			${formatChanceTable(report.egg_table)}
+			${formatChanceTable(report.eggTable)}
 		</table>
 
 		<table id="nest-table">
 			<caption>Chance of hatching Goal within X nests:</caption>
 			<tr><th>Nests</th><th>Chance</th></tr>
-			${formatChanceTable(report.nest_table)}
+			${formatChanceTable(report.nestTable)}
 		</table>
 
 		<table id="attrs-table">
@@ -193,15 +191,14 @@ function formatHatchlingReport(report) {
 // ADD EVENT HANDLERS
 /////////////////////////////////////////////////////
 
-goal.use_ranges.addEventListener("change", (evt) => {
-	goal.fieldset.classList.toggle("use-ranges-checked", goal.use_ranges.checked);
+goal.useRanges.addEventListener("change", () => {
+	goal.fieldset.classList.toggle("use-ranges-checked", goal.useRanges.checked);
 
-	goal.colour_range.primary.disabled =
-	goal.colour_range.secondary.disabled =
-	goal.colour_range.tertiary.disabled = !goal.use_ranges.checked;
-	
+	goal.colourRange.primary.disabled
+	= goal.colourRange.secondary.disabled
+	= goal.colourRange.tertiary.disabled = !goal.useRanges.checked;
 });
-triggerEvt(goal.use_ranges, "change");
+triggerEvt(goal.useRanges, "change");
 
 calcBtn.addEventListener("click", () => {
 	const report = HC.getHatchlingReport(
@@ -212,4 +209,4 @@ calcBtn.addEventListener("click", () => {
 });
 
 
-//TODO some kind of graceful error message if any of the necessary elements can't be found or the structure of the document is off? Not super critical, especially for such a small project, but may be useful to make sure I don't break anything later.
+// TODO some kind of graceful error message if any of the necessary elements can't be found or the structure of the document is off? Not super critical, especially for such a small project, but may be useful to make sure I don't break anything later.

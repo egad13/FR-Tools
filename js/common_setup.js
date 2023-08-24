@@ -7,7 +7,7 @@ author: egad13
 version: 0.0.2
 */
 
-(function () {
+(function() {
 	// A $ in the template will be replaced with the base url for this site
 	const template = `
 		<header>
@@ -32,11 +32,10 @@ version: 0.0.2
 			| <span>Last updated: <time datetime="2023-08-3">5 August 2023</time></span>
 		</footer>`;
 
-	const prep_template = prepCommonHTML();
-	var done = false;
+	const prepTemplate = prepCommonHTML();
 
 	// Toggle site theme, if necessary
-	if (localStorageGet("darkmode") == "true") {
+	if (localStorageGet("darkmode") === "true") {
 		document.querySelector("html").classList.toggle("dark");
 	}
 
@@ -44,7 +43,7 @@ version: 0.0.2
 	if (document.readyState !== "loading") {
 		setupCommonHTML();
 	} else {
-		document.addEventListener("readystatechange", e => {
+		document.addEventListener("readystatechange", () => {
 			if (document.readyState !== "loading") {
 				setupCommonHTML();
 			}
@@ -52,37 +51,35 @@ version: 0.0.2
 	}
 
 	function setupCommonHTML() {
-		prep_template.then(html => {
-			if (done) { return; }
-			done = true;
-			// add prepared template html
+		// eslint-disable-next-line no-func-assign
+		setupCommonHTML = ()=>{}; // prevent this function from running twice
+		prepTemplate.then(html => {
 			document.body.prepend(...html.querySelectorAll("header,nav"));
 			document.body.append(html.querySelector("footer"));
-		})
-		.catch(err => console.error(err));
+		}).catch(err => console.error(err));
 	}
 
 	async function prepCommonHTML() {
 		const x = window.location;
 		// So I don't have to change the link replacement when pushing remote / testing local
-		const base_url =
-			(x.hostname === "localhost") ? x.origin
+		const baseUrl = (x.hostname === "localhost")
+			? x.origin
 			: x.origin + x.pathname.slice(0, x.pathname.indexOf("/", 1));
-		const window_href = x.origin + x.pathname;
+		const windowHref = x.origin + x.pathname;
 
-		let html = document.createElement("p");
-		html.innerHTML = template.replace(/href="\$/g, `href="${base_url}/`);
+		const html = document.createElement("p");
+		html.innerHTML = template.replace(/href="\$/g, `href="${baseUrl}/`);
 
 		let currentPageName;
 		for (const a of html.querySelectorAll("a")) {
-			if (a.href === window_href || `${a.href}index.html` === window_href) {
+			if (a.href === windowHref || `${a.href}index.html` === windowHref) {
 				currentPageName = a.dataset.n ?? a.innerText;
 				a.className = "current-page";
 			}
-			delete a.dataset.n
+			delete a.dataset.n;
 		}
 		html.querySelector("h1").innerText = currentPageName;
-		html.querySelector("#theme").addEventListener("click", e => {
+		html.querySelector("#theme").addEventListener("click", () => {
 			const el = document.querySelector("html");
 			el.classList.toggle("dark");
 			localStorageSet("darkmode", el.classList.contains("dark"));
@@ -98,7 +95,7 @@ version: 0.0.2
 	function localStorageGet(key) {
 		try {
 			return localStorage.getItem(key);
-		} catch(e) {
+		} catch (e) {
 			console.error(e);
 			return null;
 		}
@@ -106,9 +103,8 @@ version: 0.0.2
 	function localStorageSet(key, val) {
 		try {
 			localStorage.setItem(key, val);
-		} catch(e) {
+		} catch (e) {
 			console.error(e);
 		}
 	}
-
 })();

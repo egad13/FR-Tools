@@ -24,10 +24,3 @@ export function triggerEvt(element, eventName) {
 	const evt = new Event(eventName, { view: window, bubbles: true, cancelable: true });
 	element.dispatchEvent(evt);
 }
-
-
-/////////////////////////////////////////////////////
-// MISC FUNCTIONS
-/////////////////////////////////////////////////////
-
-
