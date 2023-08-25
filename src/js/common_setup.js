@@ -78,7 +78,7 @@ version: 0.0.2
 			}
 			delete a.dataset.n;
 		}
-		html.querySelector("h1").innerText = currentPageName;
+		html.querySelector("h1").innerText = currentPageName || "Error 404";
 		html.querySelector("#theme").addEventListener("click", () => {
 			const el = document.querySelector("html");
 			el.classList.toggle("dark");

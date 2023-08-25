@@ -1,0 +1,40 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+	<script type="text/javascript" src="js/common_setup.js"></script>
+
+	<title>404 - Kay's FR Tools</title>
+	<meta charset="utf-8">
+	<meta name="description" content="Kay's Flight Rising Tools">
+	<meta name="author" content="egad13">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="css/styles.css" />
+	<link rel="stylesheet" href="css/404.css" />
+</head>
+
+<body>
+
+<main id="main">
+	<section style="margin: 10em inherit;text-align: center;">
+		<h2>The Shade Ate This Page</h2>
+		<p>
+			...Sorry about that. Let's get you back on track, shall we?
+		</p>
+		<p>
+			<a id="back-home">Back to About Page</a>
+			<script>
+			document.querySelector("#back-home").href = (window.location.hostname === "localhost")
+				? window.location.origin
+				: window.location.origin + window.location.pathname.slice(0, window.location.pathname.indexOf("/", 1));
+			</script>
+		</p>
+		<p>
+			(Or try one of the links in the navigation bar above)
+		</p>
+	</section>
+</main>
+
+</body>
+</html>
