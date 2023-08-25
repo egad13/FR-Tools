@@ -6,7 +6,6 @@
  * @version 0.0.1
  */
 
-import "../../lib/fr/forms.js";
 import { triggerEvt } from "../../lib/domutils.js";
 import * as HC from "./calculator.js";
 
