@@ -6,7 +6,7 @@
  * @version 0.0.1
  */
 
-import * as FR from "../flightrising/data.js";
+import * as FR from "../../lib/fr/data.js";
 
 /////////////////////////////////////////////////////
 // GENERAL FUNCTIONS
@@ -198,10 +198,10 @@ export function getHatchlingReport(parent1, parent2, goal) {
 	const nestSizes = FR.nestSizesForBreeds(parent1.breed, parent2.breed);
 
 	prob.avgNestSize = weightedMean(nestSizes.map((x) => x.eggs), nestSizes.map((x) => x.probability));
-	prob.perNest = nestProbability(nestSizes, prob.per_egg);
+	prob.perNest = nestProbability(nestSizes, prob.perEgg);
 
-	prob.eggTable = chanceTable(prob.per_egg, [1, 5, 10, 20, 50, 100]);
-	prob.nestTable = chanceTable(prob.per_nest, [1, 5, 10, 20, 50, 100]);
+	prob.eggTable = chanceTable(prob.perEgg, [1, 5, 10, 20, 50, 100]);
+	prob.nestTable = chanceTable(prob.perNest, [1, 5, 10, 20, 50, 100]);
 
 	return prob;
 }

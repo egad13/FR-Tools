@@ -35,9 +35,9 @@ jobs:
       - name: Generate docs
         uses: andstor/jsdoc-action@v1
         with:
-          source_dir: ./js
+          source_dir: ./src/js
           recurse: true
-          output_dir: ./docs
+          output_dir: ./src/docs
           front_page: ./README.md
           template: clean-jsdoc-theme
           config_file: ./.jsdoc/conf.json
@@ -50,7 +50,7 @@ jobs:
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./
+          source: ./src
           destination: ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
