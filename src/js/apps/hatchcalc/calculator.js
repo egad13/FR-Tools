@@ -63,7 +63,7 @@ function breedProbability(parent1, parent2, goal) {
 	if (goal.breed !== parent1.breed && goal.breed !== parent2.breed) {
 		return ["Hatchling breed is not one of the parents' breeds."];
 	}
-	return FR.calcRarityProb(FR.breeds, parent1.breed, parent2.breed, goal.breed);
+	return FR.calcRarityProb(FR.BREEDS, parent1.breed, parent2.breed, goal.breed);
 }
 
 /** Returns the probability of the goal eyes occurring.
@@ -72,8 +72,8 @@ function eyeProbability(goal) {
 	if (goal.eye === "any") {
 		return 1;
 	}
-	if (goal.eye in FR.eyes) {
-		return FR.eyes[goal.eye].probability;
+	if (goal.eye in FR.EYES) {
+		return FR.EYES[goal.eye].probability;
 	}
 	return ["Invalid eye type. Something has gone very wrong."];
 }
@@ -127,7 +127,7 @@ function geneProbability(parent1, parent2, goal) {
 		if (goal.gene[slot] !== parent1.gene[slot] && goal.gene[slot] !== parent2.gene[slot]) {
 			errs.push(`Hatchling ${slot} gene is not one of the parents' ${slot} genes.`);
 		} else {
-			n *= FR.calcRarityProb(FR.genes[slot], parent1.gene[slot], parent2.gene[slot], goal.gene[slot]);
+			n *= FR.calcRarityProb(FR.GENES[slot], parent1.gene[slot], parent2.gene[slot], goal.gene[slot]);
 		}
 	}
 	if (errs.length > 0) {
