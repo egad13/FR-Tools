@@ -1,10 +1,10 @@
-# Custom workflow to generate JSDocs, minify source code, and deploy the docs & minified code to Github Pages
+# Custom workflow to generate JSDocs, minify code and deploy the docs & minified code to Github Pages, when pushing changes to the source code or docs to the main branch
 name: Deploy to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
+    paths: ["src/**", ".jsdoc/**"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
