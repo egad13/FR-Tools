@@ -1,6 +1,6 @@
 /**
  * The view for the Hatchling Probability Calculator. Collects the necessary form fields for each dragon into a structure hatchcalc/controller understands, and also tells it which element to treat as the "calculate" button and which element to dump results into.
- * @module hatchcalc/view
+ * @module hatchcalc/main
  * @requires module:domutils
  * @author egad13
  * @version 0.0.1
@@ -90,17 +90,17 @@ class GoalFields extends DragonFields {
 
 /**
  * Form fields representing the first parent dragon.
- * @type {module:hatchcalc/view.DragonFields}
+ * @type {module:hatchcalc/view~DragonFields}
  */
 const parent1 = new DragonFields("parent1");
 /**
  * Form fields representing the second parent dragon.
- * @type {module:hatchcalc/view.DragonFields}
+ * @type {module:hatchcalc/view~DragonFields}
  */
 const parent2 = new DragonFields("parent2");
 /**
  * Form fields representing the goal hatchling.
- * @type {module:hatchcalc/view.GoalFields}
+ * @type {module:hatchcalc/view~GoalFields}
  */
 const goal = new GoalFields("hatchling");
 
@@ -127,14 +127,36 @@ function displayReport(report) {
 /** Turns a chance table into rows for an HTML table
  * @param {number[][]} table
  * @private */
-function formatChanceTable(table) {
-	let out = "";
+function chanceTableRows(table) {
+	let out;
 	for (let i = 0; i < table.length; i++) {
-		const chance = (table[i][1] >= 0.999) ? "~100%"
-			: `${(table[i][1] * 100).toFixed(2)}%`;
-		out += `\n<tr><td>${table[i][0]}</td><td>${chance}</td></tr>`;
+		out += `\n<tr><td>${table[i][0]}</td><td>${percent(table[i][1])}</td></tr>`;
 	}
-	return out;
+	return out.trim();
+}
+
+/** Convert a probability between 0 and 1 to a percentage, rounded to 2 decimal places.
+ * @param {number} x
+ * @private */
+function percent(x) {
+	if (x >= 0.999) {
+		return "~100%";
+	} else if (x <= 0.001) {
+		return "~0%";
+	}
+	return `${round(x * 100)}%`;
+}
+/** Convert a probability between 0 and 1 to its inverse (ie 1/x), rounded to 2 decimal places.
+ * @param {number} x
+ * @private */
+function inverse(x) {
+	return round(1 / x);
+}
+/** Round a number to 2 decimal places.
+ * @param {number} x
+ * @private */
+function round(x) {
+	x.toFixed(2);
 }
 
 /**
@@ -144,16 +166,13 @@ function formatChanceTable(table) {
 function formatHatchlingReport(report) {
 	if (report.err) {
 		return `
-				<div id="placeholder">
-					<p>That hatchling is impossible with the given parents!</p>
-					<ul>
-						<li>${report.err.join("</li>\n\t\t<li>")}</li>
-					</ul>
-				</div>`;
+			<div id="placeholder">
+				<p>That hatchling is impossible with the given parents!</p>
+				<ul>
+					<li>${report.err.join("</li>\n<li>")}</li>
+				</ul>
+			</div>`;
 	}
-	const percent = (x) => `${(x * 100).toFixed(2)}%`,
-		inverse = (x) => (1 / x).toFixed(2),
-		round = (x) => x.toFixed(2);
 	return `
 		<div id="overview">
 			<p>Each egg from this pair will produce a Goal hatchling ${percent(report.perEgg)} of the time; that's 1 out of every ${inverse(report.perEgg)} eggs.</p>
@@ -166,13 +185,13 @@ function formatHatchlingReport(report) {
 		<table id="egg-table">
 			<caption>Chance of hatching Goal within X eggs:</caption>
 			<tr><th>Eggs</th><th>Chance</th></tr>
-			${formatChanceTable(report.eggTable)}
+			${chanceTableRows(report.eggTable)}
 		</table>
 
 		<table id="nest-table">
 			<caption>Chance of hatching Goal within X nests:</caption>
 			<tr><th>Nests</th><th>Chance</th></tr>
-			${formatChanceTable(report.nestTable)}
+			${chanceTableRows(report.nestTable)}
 		</table>
 
 		<table id="attrs-table">
@@ -206,6 +225,3 @@ calcBtn.addEventListener("click", () => {
 	console.log(report);
 	displayReport(report);
 });
-
-
-// TODO some kind of graceful error message if any of the necessary elements can't be found or the structure of the document is off? Not super critical, especially for such a small project, but may be useful to make sure I don't break anything later.

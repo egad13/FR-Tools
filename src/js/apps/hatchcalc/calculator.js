@@ -1,9 +1,7 @@
-/**
- * The model for the hatchling probability calculator. Does all the calculations, etc.
- * @module hatchcalc/model
- * @requires module:frdata
- * @author egad13
+/** Performs probability calculations to determine a pair of dragons' chances of producing a defined goal hatchling, based on Flight Rising's breeding mechanics.
+ * @module hatchcalc/calculator
  * @version 0.0.1
+ * @requires module:fr/data
  */
 
 import * as FR from "../../lib/fr/data.js";
@@ -153,7 +151,7 @@ function nestProbability(nestSizes, eggProb) {
 	// P(A|B) for independent events is P(A) * P(B)
 	// prob that nest size occurs AND contains a goal hatchling
 	const nestSuccessProb
-		= nestSizes.map(n => n.probability * probInAttempts(eggProb, n.eggs));
+		= nestSizes.map(n => n.probability * probInAttempts(eggProb, n.size));
 
 	// P(A or B) = P(A) + P(B)
 	// prob that any nest will contain a goal hatchling
@@ -165,12 +163,11 @@ function nestProbability(nestSizes, eggProb) {
 // OUTPUT FUNCTIONS
 /////////////////////////////////////////////////////
 
-/**
- * Calculates a detailed report of the probability of hatching the given Goal hatchling by nesting the given parents. Includes the overall probability of a goal hatchling occurring in one egg and in one nest, tables of expected probabilities within several attempts of eggs and nests, and probabilities of success in individual properties.
- * @param {module:hatchcalc/controller~DragonTraits} parent1
- * @param {module:hatchcalc/controller~DragonTraits} parent2
- * @param {module:hatchcalc/controller~GoalTraits} goal
- * @returns {Object|{err:string[]}} */
+/** Calculates a detailed report of the probability of hatching the given Goal hatchling by nesting the given parents. Includes the overall probability of a goal hatchling occurring in one egg and in one nest, tables of expected probabilities within several attempts of eggs and nests, and probabilities of success in individual properties.
+ * @param {module:hatchcalc/controller~DragonTraits.values} parent1
+ * @param {module:hatchcalc/controller~DragonTraits.values} parent2
+ * @param {module:hatchcalc/controller~GoalTraits.values} goal
+ * @returns {{breed:number,colour:number,gene:number,eye:number,gender:number,perEgg:number,perNest:number,avgNestSize:number,eggTable:number[][],nestTable:number[][]}|{err: string[]}} */
 export function getHatchlingReport(parent1, parent2, goal) {
 	let perEgg = 1;
 	const err = [],
@@ -197,7 +194,7 @@ export function getHatchlingReport(parent1, parent2, goal) {
 
 	const nestSizes = FR.nestSizesForBreeds(parent1.breed, parent2.breed);
 
-	prob.avgNestSize = weightedMean(nestSizes.map((x) => x.eggs), nestSizes.map((x) => x.probability));
+	prob.avgNestSize = weightedMean(nestSizes.map((x) => x.size), nestSizes.map((x) => x.probability));
 	prob.perNest = nestProbability(nestSizes, prob.perEgg);
 
 	prob.eggTable = chanceTable(prob.perEgg, [1, 5, 10, 20, 50, 100]);
