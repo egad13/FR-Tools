@@ -1,10 +1,12 @@
 /** Performs probability calculations to determine a pair of dragons' chances of producing a defined goal hatchling, based on Flight Rising's breeding mechanics.
+ *
+ * Relies on the `data` module from `FRjs`.
  * @module hatchcalc/calculator
  * @version 0.0.1
- * @requires module:fr/data
+ * @outerdocs FRjs
  */
 
-import * as FR from "../../lib/fr/data.js";
+import * as FR from "FRjs/data.min.js";
 
 /////////////////////////////////////////////////////
 // GENERAL FUNCTIONS
@@ -89,9 +91,9 @@ function colourProbability(parent1, parent2, goal) {
 		}
 
 		const p1 = parent1.colour[slot], p2 = parent2.colour[slot],
-			g1 = goal.colour[slot], g2 = goal.colour_range[slot];
+			g1 = goal.colour[slot], g2 = goal.colourRange[slot];
 
-		if (goal.use_ranges && g2 !== "") {
+		if (goal.useRanges && g2 !== "") {
 			// error checking
 			if (!FR.isColourSubrangeInRange(p1, p2, g1, g2)) {
 				errs.push(`Hatchling's ${slot} colour range is not within the range of the parents' ${slot} colours.`);

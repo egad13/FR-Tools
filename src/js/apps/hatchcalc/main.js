@@ -1,11 +1,15 @@
 /**
  * The view for the Hatchling Probability Calculator. Collects the necessary form fields for each dragon into a structure hatchcalc/controller understands, and also tells it which element to treat as the "calculate" button and which element to dump results into.
+ *
+ * Relies on the `forms` and `data` modules from `FRjs`.
  * @module hatchcalc/main
  * @requires module:domutils
- * @author egad13
+ * @requires module:hatchcalc/calculator
  * @version 0.0.1
+ * @outerdocs FRjs
  */
 
+import("FRjs/forms.min.js");
 import { triggerEvt } from "../../lib/domutils.js";
 import * as HC from "./calculator.js";
 
@@ -128,7 +132,7 @@ function displayReport(report) {
  * @param {number[][]} table
  * @private */
 function chanceTableRows(table) {
-	let out;
+	let out = "";
 	for (let i = 0; i < table.length; i++) {
 		out += `\n<tr><td>${table[i][0]}</td><td>${percent(table[i][1])}</td></tr>`;
 	}
@@ -139,9 +143,9 @@ function chanceTableRows(table) {
  * @param {number} x
  * @private */
 function percent(x) {
-	if (x >= 0.999) {
+	if (x >= 0.9999) {
 		return "~100%";
-	} else if (x <= 0.001) {
+	} else if (x <= 0.0001) {
 		return "~0%";
 	}
 	return `${round(x * 100)}%`;
@@ -156,7 +160,7 @@ function inverse(x) {
  * @param {number} x
  * @private */
 function round(x) {
-	x.toFixed(2);
+	return x.toFixed(2);
 }
 
 /**
@@ -173,6 +177,8 @@ function formatHatchlingReport(report) {
 				</ul>
 			</div>`;
 	}
+	console.log("rep.perEgg", report.perEgg, percent(report.perEgg), inverse(report.perEgg));
+
 	return `
 		<div id="overview">
 			<p>Each egg from this pair will produce a Goal hatchling ${percent(report.perEgg)} of the time; that's 1 out of every ${inverse(report.perEgg)} eggs.</p>
@@ -201,7 +207,7 @@ function formatHatchlingReport(report) {
 			<tr><td>Eye type</td><td>${percent(report.eye)}</td></tr>
 			<tr><td>Colours</td><td>${percent(report.colour)}</td></tr>
 			<tr><td>Genes</td><td>${percent(report.gene)}</td></tr>
-		</table>`.replace(/\r|\n|\t|\s{2,}/g, "");
+		</table>`;
 }
 
 

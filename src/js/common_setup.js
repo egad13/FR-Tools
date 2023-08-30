@@ -29,7 +29,7 @@ version: 0.0.2
 		<footer>
 			<span><a href="https://github.com/egad13/FR-Tools">Source code</a></span>
 			| <span><a href="$docs">Docs</a></span>
-			| <span>Last updated: <time datetime="2023-08-3">5 August 2023</time></span>
+			| <span>Last updated: <time datetime="2023-08-30">30 August 2023</time></span>
 		</footer>`;
 
 	const prepTemplate = prepCommonHTML();
