@@ -53,64 +53,32 @@ function weightedMean(values, weights) {
 /** Returns the probability of the goal breed occurring, given the parent breeds; or an error message if the probability can't be calculated.
  * @private */
 function breedProbability(parent1, parent2, goal) {
-	if (!FR.areBreedsCompatible(parent1.breed, parent2.breed)) {
-		return ["Incompatible parent breeds. Moderns can breed with any other modern; ancients can breed with the same species of ancient."];
-	}
-	if (goal.breed === "any") {
-		return 1;
-	}
-
-	if (goal.breed !== parent1.breed && goal.breed !== parent2.breed) {
-		return ["Hatchling breed is not one of the parents' breeds."];
-	}
+	if (goal.breed === "any") { return 1; }
 	return FR.calcRarityProb(FR.BREEDS, parent1.breed, parent2.breed, goal.breed);
 }
 
 /** Returns the probability of the goal eyes occurring.
  * @private */
 function eyeProbability(goal) {
-	if (goal.eye === "any") {
-		return 1;
-	}
-	if (goal.eye in FR.EYES) {
-		return FR.EYES[goal.eye].probability;
-	}
-	return ["Invalid eye type. Something has gone very wrong."];
+	if (goal.eye === "any") { return 1; }
+	return FR.EYES[goal.eye].probability;
 }
 
 /** Returns the probability of the goal colours occurring, given the parent colourss; or error messages if the probability can't be calculated.
  * @private */
 function colourProbability(parent1, parent2, goal) {
-	const errs = [];
 	let prob = 1;
-
 	for (const slot in goal.colour) {
-		// skip if probability need not be calc'd for this slot
-		if (goal.colour[slot] === "any") {
-			continue;
-		}
+		if (goal.colour[slot] === "any") { continue; }
 
 		const p1 = parent1.colour[slot], p2 = parent2.colour[slot],
 			g1 = goal.colour[slot], g2 = goal.colourRange[slot];
 
 		if (goal.useRanges && g2 !== "") {
-			// error checking
-			if (!FR.isColourSubrangeInRange(p1, p2, g1, g2)) {
-				errs.push(`Hatchling's ${slot} colour range is not within the range of the parents' ${slot} colours.`);
-				continue;
-			}
 			prob *= FR.colourRangeLength(g1, g2) / FR.colourRangeLength(p1, p2);
 		} else {
-			// error checking
-			if (!FR.isColourInRange(p1, p2, g1)) {
-				errs.push(`Hatchling's ${slot} colour is not within the range of the parents' ${slot} colours.`);
-				continue;
-			}
 			prob *= 1 / FR.colourRangeLength(p1, p2);
 		}
-	}
-	if (errs.length > 0) {
-		return errs;
 	}
 	return prob;
 }
@@ -118,20 +86,11 @@ function colourProbability(parent1, parent2, goal) {
 /** Returns the probability of the goal genes occurring, given the parent genes; or error messages if the probability can't be calculated.
  * @private */
 function geneProbability(parent1, parent2, goal) {
-	const errs = [];
 	let n = 1;
 	for (const slot in goal.gene) {
-		if (goal.gene[slot] === "any") {
-			continue;
-		}
-		if (goal.gene[slot] !== parent1.gene[slot] && goal.gene[slot] !== parent2.gene[slot]) {
-			errs.push(`Hatchling ${slot} gene is not one of the parents' ${slot} genes.`);
-		} else {
-			n *= FR.calcRarityProb(FR.GENES[slot], parent1.gene[slot], parent2.gene[slot], goal.gene[slot]);
-		}
-	}
-	if (errs.length > 0) {
-		return errs;
+		if (goal.gene[slot] === "any") { continue; }
+
+		n *= FR.calcRarityProb(FR.GENES[slot], parent1.gene[slot], parent2.gene[slot], goal.gene[slot]);
 	}
 	return n;
 }
@@ -139,9 +98,7 @@ function geneProbability(parent1, parent2, goal) {
 /** Returns the probability of the goal gender occurring.
  * @private */
 function genderProbability(goal) {
-	if (goal.gender === "any") {
-		return 1;
-	}
+	if (goal.gender === "any") { return 1; }
 	return 0.5;
 }
 
@@ -166,9 +123,9 @@ function nestProbability(nestSizes, eggProb) {
 /////////////////////////////////////////////////////
 
 /** Calculates a detailed report of the probability of hatching the given Goal hatchling by nesting the given parents. Includes the overall probability of a goal hatchling occurring in one egg and in one nest, tables of expected probabilities within several attempts of eggs and nests, and probabilities of success in individual properties.
- * @param {module:hatchcalc/controller~DragonTraits.values} parent1
- * @param {module:hatchcalc/controller~DragonTraits.values} parent2
- * @param {module:hatchcalc/controller~GoalTraits.values} goal
+ * @param {module:hatchcalc/main~DragonFields.values} parent1
+ * @param {module:hatchcalc/main~DragonFields.values} parent2
+ * @param {module:hatchcalc/main~GoalFields.values} goal
  * @returns {{breed:number,colour:number,gene:number,eye:number,gender:number,perEgg:number,perNest:number,avgNestSize:number,eggTable:number[][],nestTable:number[][]}|{err: string[]}} */
 export function getHatchlingReport(parent1, parent2, goal) {
 	let perEgg = 1;

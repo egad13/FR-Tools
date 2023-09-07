@@ -5,13 +5,14 @@
  * @module hatchcalc/main
  * @requires module:domutils
  * @requires module:hatchcalc/calculator
- * @version 0.0.1
+ * @requires module:hatchcalc/validation
  * @outerdocs FRjs
  */
 
 import("FRjs/forms");
 import { triggerEvt } from "../../lib/domutils.js";
 import * as HC from "./calculator.js";
+import * as HCV from "./validation.js";
 
 /////////////////////////////////////////////////////
 // CLASSES
@@ -123,6 +124,16 @@ function displayReport(report) {
 	document.location.hash = "hatchcalc-results";
 }
 
+function displayErrors(errors) {
+	resultElt.innerHTML = `
+	<div id="placeholder">
+		<p>That hatchling is impossible with the given parents!</p>
+		<ul>
+			<li>${errors.join("</li>\n<li>")}</li>
+		</ul>
+	</div>`;
+}
+
 
 /////////////////////////////////////////////////////
 // RESULTS FORMATTING
@@ -168,17 +179,6 @@ function round(x) {
  * @param {Object} report
  * @returns {string} */
 function formatHatchlingReport(report) {
-	if (report.err) {
-		return `
-			<div id="placeholder">
-				<p>That hatchling is impossible with the given parents!</p>
-				<ul>
-					<li>${report.err.join("</li>\n<li>")}</li>
-				</ul>
-			</div>`;
-	}
-	console.log("rep.perEgg", report.perEgg, percent(report.perEgg), inverse(report.perEgg));
-
 	return `
 		<div id="overview">
 			<p>Each egg from this pair will produce a Goal hatchling ${percent(report.perEgg)} of the time; that's 1 out of every ${inverse(report.perEgg)} eggs.</p>
@@ -225,9 +225,16 @@ goal.useRanges.addEventListener("change", () => {
 triggerEvt(goal.useRanges, "change");
 
 calcBtn.addEventListener("click", () => {
-	const report = HC.getHatchlingReport(
-		parent1.values, parent2.values, goal.values
-	);
+	const p1vals = parent1.values, p2vals = parent2.values, gVals = goal.values;
+
+	const validationErrors = HCV.validateAll(p1vals, p2vals, gVals);
+	console.log(validationErrors);
+	if (validationErrors.length > 0) {
+		displayErrors(validationErrors);
+		return;
+	}
+
+	const report = HC.getHatchlingReport(p1vals, p2vals, gVals);
 	console.log(report);
 	displayReport(report);
 });
