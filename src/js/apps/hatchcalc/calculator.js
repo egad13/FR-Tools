@@ -6,7 +6,7 @@
  * @outerdocs FRjs
  */
 
-import * as FR from "FRjs/data.min.js";
+import * as FR from "FRjs/data";
 
 /////////////////////////////////////////////////////
 // GENERAL FUNCTIONS

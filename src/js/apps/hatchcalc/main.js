@@ -9,7 +9,7 @@
  * @outerdocs FRjs
  */
 
-import("FRjs/forms.min.js");
+import("FRjs/forms");
 import { triggerEvt } from "../../lib/domutils.js";
 import * as HC from "./calculator.js";
 

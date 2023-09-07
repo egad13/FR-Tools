@@ -1,13 +1,18 @@
 /*
-Adds HTML shared by all pages (header, navbar, footer) to the document, sets up the event
-listener for toggling the site theme. IIFE is to avoid cluttering the global namespace.
-Add as a regular script to the <head> of every page.
+Adds HTML shared by all pages (header, navbar, footer) to the document, sets up
+the event listener for toggling the site theme. IIFE is to avoid cluttering the
+global namespace.
 
-author: egad13
-version: 0.0.2
+Add as a regular script to the <head> of every page.
 */
 
 (function() {
+	const url = window.location;
+	const baseUrl = (url.hostname === "localhost")
+		? `http://${url.host}/FR-Tools/src`
+		: url.origin + url.pathname.slice(0, url.pathname.indexOf("/", 1));
+	const pageUrl = url.origin + url.pathname;
+
 	// A $ in the template will be replaced with the base url for this site
 	const template = `
 		<header>
@@ -60,19 +65,12 @@ version: 0.0.2
 	}
 
 	async function prepCommonHTML() {
-		const x = window.location;
-		// So I don't have to change the link replacement when pushing remote / testing local
-		const baseUrl = (x.hostname === "localhost")
-			? x.origin
-			: x.origin + x.pathname.slice(0, x.pathname.indexOf("/", 1));
-		const windowHref = x.origin + x.pathname;
-
 		const html = document.createElement("p");
 		html.innerHTML = template.replace(/href="\$/g, `href="${baseUrl}/`);
 
 		let currentPageName;
 		for (const a of html.querySelectorAll("a")) {
-			if (a.href === windowHref || `${a.href}index.html` === windowHref) {
+			if (a.href === pageUrl || `${a.href}index.html` === pageUrl) {
 				currentPageName = a.dataset.n ?? a.innerText;
 				a.className = "current-page";
 			}
