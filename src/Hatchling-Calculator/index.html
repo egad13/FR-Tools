@@ -13,7 +13,11 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Modules -->
-	<script type="module" src="../js/apps/hatchcalc/main.js"></script>
+	<!-- Using the src attribute on a script type=module appears to be broken in Firefox v121; or at least, it isn't working for this site. Switching to a dynamic import in an inline module and seeing if that fixes it. -->
+	<!--<script type="module" src="../js/apps/hatchcalc/main.js"></script>-->
+	<script type="module">
+		import("../js/apps/hatchcalc/main.js");
+	</script>
 
 	<!-- Styles -->
 	<link rel="stylesheet" href="../css/styles.css" />
