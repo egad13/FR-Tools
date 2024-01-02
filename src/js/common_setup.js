@@ -34,7 +34,7 @@ Add as a regular script to the <head> of every page.
 		<footer>
 			<span><a href="https://github.com/egad13/FR-Tools">Source code</a></span>
 			| <span><a href="$docs">Docs</a></span>
-			| <span>Last updated: <time datetime="2023-08-30">30 August 2023</time></span>
+			| <span>Last updated: <time>?</time></span>
 		</footer>`;
 
 	const prepTemplate = prepCommonHTML();
@@ -61,6 +61,9 @@ Add as a regular script to the <head> of every page.
 		prepTemplate.then(html => {
 			document.body.prepend(...html.querySelectorAll("header,nav"));
 			document.body.append(html.querySelector("footer"));
+			try {
+				insertLastCommitDate();
+			} catch {}
 		}).catch(err => console.error(err));
 	}
 
@@ -84,6 +87,35 @@ Add as a regular script to the <head> of every page.
 		});
 
 		return html;
+	}
+
+	// Sets the "last updated" section of the footer to be the date + time of
+	// the last commit to either this website's repository, or the FRjs repo.
+	async function insertLastCommitDate() {
+		const dateRegex = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z/;
+		const urls = [
+			"https://api.github.com/repos/egad13/FR-Tools/commits/main",
+			"https://api.github.com/repos/egad13/FRjs/commits/main"
+		]
+		const dates = [];
+
+		for (const url of urls) {
+			const request = await fetch(url),
+				json = await request.json();
+			[, year, month, day, hours, minutes, seconds] = dateRegex.exec(json.commit.author.date);
+			dates.push(new Date(year, month-1, day, hours, minutes, seconds));
+		}
+
+		const recent = (dates[0].getTime() > dates[1].getTime())
+			? dates[0] : dates[1];
+
+		const timeElt = document.querySelector("footer time");
+		timeElt.setAttribute("datetime", `${recent.getFullYear()}-${recent.getMonth()+1}-${recent.getDate()} ${recent.getHours()}:${recent.getMinutes()}`);
+		timeElt.innerHTML = recent.toLocaleString("en-CA", {
+			day: "numeric",
+			month: "long",
+			year: "numeric",
+		});
 	}
 
 	// Catches errors when getting/setting localStorage, so that if the feature is
