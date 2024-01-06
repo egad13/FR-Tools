@@ -109,8 +109,10 @@ Add as a regular script to the <head> of every page.
 		const recent = (dates[0].getTime() > dates[1].getTime())
 			? dates[0] : dates[1];
 
+		const pad = n => (`0${n}`).slice(-2);
+
 		const timeElt = document.querySelector("footer time");
-		timeElt.setAttribute("datetime", `${recent.getFullYear()}-${recent.getMonth()+1}-${recent.getDate()} ${recent.getHours()}:${recent.getMinutes()}`);
+		timeElt.setAttribute("datetime", `${recent.getFullYear()}-${pad(recent.getMonth()+1)}-${pad(recent.getDate())} ${pad(recent.getHours())}:${pad(recent.getMinutes())}`);
 		timeElt.innerHTML = recent.toLocaleString("en-CA", {
 			day: "numeric",
 			month: "long",
