@@ -21,25 +21,22 @@ Add as a regular script to the <head> of every page that uses FRjs.
 		? ".js"
 		: `.min.js${cacheBuster}`;
 
-	const importMap = {
-		imports: {
-			"FRjs/": frjsUrl,
-			"FRjs/data": `${frjsUrl}data${suffix}`,
-			"FRjs/forms": `${frjsUrl}forms${suffix}`
-		}
-	};
+	const importMap = { imports: { "FRjs/": frjsUrl } };
+	for (const file of preloadNames) {
+		importMap.imports[`FRjs/${file}`] = `${frjsUrl}${file}${suffix}`;
+	}
+
+	// the import map itself
+	const mapScript = Object.assign(document.createElement("script"), {
+		type: "importmap",
+		textContent: JSON.stringify(importMap)
+	});
 
 	// polyfill for better import map support
 	const mapPolyfill = Object.assign(document.createElement("script"), {
 		type: "text/javascript",
 		async: true,
 		src: "https://unpkg.com/es-module-shims@1.8/dist/es-module-shims.js"
-	});
-
-	// the import map itself
-	const mapScript = Object.assign(document.createElement("script"), {
-		type: "importmap",
-		textContent: JSON.stringify(importMap)
 	});
 
 	// preloads for FRjs
@@ -51,5 +48,8 @@ Add as a regular script to the <head> of every page that uses FRjs.
 		}));
 	}
 
-	document.currentScript.after(mapPolyfill, mapScript, ...preloads);
+	// Add all to <head>. Separate statements or else chromium complains
+	document.currentScript.after(mapPolyfill);
+	mapPolyfill.after(mapScript);
+	mapScript.after(...preloads);
 })();
