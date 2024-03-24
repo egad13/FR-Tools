@@ -16,7 +16,7 @@ Add as a regular script to the <head> of every page that uses FRjs.
 
 	const frjsUrl = isLocal
 		? `http://${url.host}/FRjs/src/`
-		: "https://cdn.jsdelivr.net/gh/egad13/FRjs@0/dist/";
+		: "https://cdn.jsdelivr.net/gh/egad13/FRjs@1/dist/";
 	const suffix = isLocal
 		? ".js"
 		: `.min.js${cacheBuster}`;

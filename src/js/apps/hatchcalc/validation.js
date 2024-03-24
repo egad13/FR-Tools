@@ -129,7 +129,7 @@ function validateEye(goal) {
  * @param {string} goal
  * @returns {string[]} An array of error messages. An empty array means the validation passed. */
 function validateGender(goal) {
-	if (!["any", "m", "f"].includes(goal)) {
+	if (goal !== "any" && !(goal in FR.GENDERS)) {
 		return ["Invalid Hatchling gender."];
 	}
 	return [];

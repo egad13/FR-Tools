@@ -32,7 +32,7 @@ fieldset {
 	position: relative;
 	display: grid;
 	grid-template-columns: [pad-start] 0 [start] min-content repeat(4, [c] 1fr) [end] 0 [pad-end];
-	grid-template-rows: repeat(4, 1fr) 0;
+	grid-template-rows: repeat(6, min-content) 0;
 	column-gap: var(--standard-gap);
 	row-gap: calc(var(--standard-gap)/1.5);
 	align-items: center;
@@ -53,13 +53,38 @@ fieldset>legend {
 	background: var(--crimson);
 	color: var(--gold);
 }
+fieldset>details {
+	border-top: 1px solid var(--dark-gray);
+	cursor:pointer;
+
+	grid-column: start / span 5;
+}
+fieldset>details>* {
+	margin: var(--half-gap) 0 0;
+	font-size: 80%;
+}
+fieldset>details>summary {
+	padding: var(--standard-gap) 0 var(--half-gap);
+	margin: 0;
+	font-weight: bold;
+}
+fieldset>details>input,
+fieldset>details>textarea {
+	min-width: 100%;
+	max-width: 100%;
+}
+fieldset>details>button,
+fieldset>details>label {
+	display: inline-block;
+	padding: var(--half-gap);
+}
 fieldset>label,
 fieldset>span {
 	grid-column: start / span 1;
 }
 fieldset>select[is=fr-breeds],
 fieldset>select[is=fr-eyes],
-fieldset>select.gender {
+fieldset>select[is=fr-genders] {
 	grid-column: c 2 / span 2;
 }
 fieldset>select[is=fr-colours] {
@@ -69,8 +94,8 @@ fieldset>select[is=fr-genes] {
 	grid-column: c 3 / span 2;
 }
 
-fieldset#hatchling {
-	grid-template-rows: repeat(7, min-content) 0;
+fieldset#h {
+	grid-template-rows: repeat(9, min-content) 0;
 }
 .check-wrapper {
 	grid-column: c 1 / span 4;
@@ -92,8 +117,8 @@ select {
 	width: 100%;
 }
 /* Hatchling fieldset changes layout if a specific checkbox is checked */
-fieldset#hatchling.use-ranges-checked {
-	grid-template-rows: min-content repeat(10, min-content) 0;
+fieldset#h.use-ranges-checked {
+	grid-template-rows: min-content repeat(12, min-content) 0;
 }
 .use-ranges-checked .range-wrapper {
 	grid-row: auto / span 2;
@@ -103,10 +128,10 @@ fieldset#hatchling.use-ranges-checked {
 	display: initial;
 }
 .use-ranges-checked .sec-span {
-	grid-row: 8 / span 1;
+	grid-row: 7 / span 1;
 }
 .use-ranges-checked .ter-span {
-	grid-row: 10 / span 1;
+	grid-row: 9 / span 1;
 }
 
 

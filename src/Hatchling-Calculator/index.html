@@ -4,7 +4,7 @@
 <head>
 	<!-- Script Setup -->
 	<script type="text/javascript" src="../js/common_setup.js"></script>
-	<script type="text/javascript" src="../js/import_map.js" preloads="data forms"></script>
+	<script type="text/javascript" src="../js/import_map.js" preloads="data forms convert"></script>
 
 	<!-- Meta Tags -->
 	<title>Hatchling Probability Calculator - Kay's FR Tools</title>
@@ -32,7 +32,7 @@
 	<form>
 		<h2>Input</h2>
 
-		<fieldset id="parent1">
+		<fieldset id="p1">
 			<legend>Parent 1</legend>
 
 			<label for="p1-b">Breed:</label>
@@ -42,22 +42,22 @@
 			<label for="p1-c1" class="sr-only">Primary Colour</label>
 			<select id="p1-c1" is="fr-colours" class="primary"></select>
 			<label for="p1-g1" class="sr-only">Primary Gene</label>
-			<select id="p1-g1" is="fr-genes" slot="primary" breed="p1-b" class="primary gene"></select>
+			<select id="p1-g1" is="fr-genes" slot="primary" breed="p1-b"></select>
 
 			<span>Secondary:</span>
 			<label for="p1-c2" class="sr-only">Secondary Colour</label>
 			<select id="p1-c2" is="fr-colours" class="secondary"></select>
 			<label for="p1-g2" class="sr-only">Secondary Gene</label>
-			<select id="p1-g2" is="fr-genes" slot="secondary" breed="p1-b" class="secondary gene"></select>
+			<select id="p1-g2" is="fr-genes" slot="secondary" breed="p1-b"></select>
 
 			<span>Tertiary:</span>
 			<label for="p1-c3" class="sr-only">Tertiary Colour</label>
 			<select id="p1-c3" is="fr-colours" class="tertiary"></select>
 			<label for="p1-g3" class="sr-only">Tertiary Gene</label>
-			<select id="p1-g3" is="fr-genes" slot="tertiary" breed="p1-b" class="tertiary gene"></select>
+			<select id="p1-g3" is="fr-genes" slot="tertiary" breed="p1-b"></select>
 		</fieldset>
 
-		<fieldset id="parent2">
+		<fieldset id="p2">
 			<legend>Parent 2</legend>
 
 			<label for="p2-b">Breed:</label>
@@ -82,7 +82,7 @@
 			<select id="p2-g3" is="fr-genes" slot="tertiary" breed="p2-b"></select>
 		</fieldset>
 
-		<fieldset id="hatchling">
+		<fieldset id="h">
 			<legend>Hatchling</legend>
 
 			<label for="h-b">Breed:</label>
@@ -91,15 +91,13 @@
 			</select>
 
 			<label for="h-e">Eye Type:</label>
-			<select id="h-e" is="fr-eyes">
+			<select id="h-e" is="fr-eyes" only-natural>
 				<option value="any" selected="selected">Any</option>
 			</select>
 
 			<label for="h-gen">Gender:</label>
-			<select id="h-gen" class="gender">
+			<select id="h-gen" is="fr-genders">
 				<option value="any" selected="selected">Any</option>
-				<option value="m">Male</option>
-				<option value="f">Female</option>
 			</select>
 
 			<div class="check-wrapper">
@@ -168,17 +166,53 @@
 
 		</fieldset>
 
+		<template id="import-controls">
+			<details>
+				<summary>Import from scrying workshop link</summary>
+				<input id="a-scry" type="url" placeholder="https://www1.flightrising.com/scrying/predict?breed=7&..."/>
+				<button type="button" class="scry-btn">Import</button>
+				<label for="a-scry">Enter a scrying workshop URL - not a saved morphology, a link to the exact traits.</label>
+			</details>
+			<details>
+				<summary>Import from dragon profile</summary>
+				<textarea id="a-profile"></textarea>
+				<button type="button" class="profile-btn">Import</button>
+				<label for="a-profile">Enter the contents of a dragon's profile - select all the text on the profile, copy it, and paste it here.</label>
+			</details>
+		</template>
+		<script>
+			// Add import controls to all fieldsets
+			(function() {
+				const template = document.querySelector("#import-controls");
+
+				for (const d of ["p1", "p2", "h"]) {
+					const importControls = template.content.cloneNode(true);
+					for (const details of importControls.childNodes) {
+						for (const elt of details.childNodes) {
+							if (elt.id) {
+								elt.id = elt.id?.replace("a", d);
+							}
+							if (elt.htmlFor) {
+								elt.htmlFor = elt.htmlFor?.replace("a", d);
+							}
+						}
+					}
+					document.querySelector(`fieldset#${d}`).append(importControls);
+				}
+			})();
+		</script>
+
 		<button type="button" id="calc">Calculate Probability</button>
 	</form>
 
 	<section >
 		<h2>Results</h2>
 
-		<div id="results">
+		<output id="results">
 			<div id="placeholder">
 				<p>Enter the info for the parents and the desired hatchling, then click Calculate!</p>
 			</div>
-		</div>
+		</output>
 	</section>
 
 </main>

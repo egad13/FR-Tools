@@ -10,6 +10,7 @@
  */
 
 import("FRjs/forms");
+import {DragonTraits} from "FRjs/convert";
 import { triggerEvt } from "../../lib/domutils.js";
 import * as HC from "./calculator.js";
 import * as HCV from "./validation.js";
@@ -24,18 +25,18 @@ class DragonFields {
 		this.fieldset = document.querySelector(`#${fieldsetID}`);
 		const get = this.fieldset.querySelector.bind(this.fieldset);
 
-		this.breed = get(`[is=fr-breeds]`);
+		this.breed = get('[is=fr-breeds]');
 
 		this.colour = {
-			primary: get(`.primary[is="fr-colours"]`),
-			secondary: get(`.secondary[is="fr-colours"]`),
-			tertiary: get(`.tertiary[is="fr-colours"]`)
+			primary: get('.primary[is="fr-colours"]'),
+			secondary: get('.secondary[is="fr-colours"]'),
+			tertiary: get('.tertiary[is="fr-colours"]')
 		};
 
 		this.gene = {
-			primary: get(`[is="fr-genes"][slot="primary"]`),
-			secondary: get(`[is="fr-genes"][slot="secondary"]`),
-			tertiary: get(`[is="fr-genes"][slot="tertiary"]`)
+			primary: get('[is="fr-genes"][slot="primary"]'),
+			secondary: get('[is="fr-genes"][slot="secondary"]'),
+			tertiary: get('[is="fr-genes"][slot="tertiary"]')
 		};
 	}
 
@@ -54,6 +55,18 @@ class DragonFields {
 			}
 		};
 	}
+
+	set values(indices) {
+		this.breed.value = indices.breed;
+
+		this.colour.primary.value = indices.colour.primary;
+		this.colour.secondary.value = indices.colour.secondary;
+		this.colour.tertiary.value = indices.colour.tertiary;
+
+		this.gene.primary.value = indices.gene.primary;
+		this.gene.secondary.value = indices.gene.secondary;
+		this.gene.tertiary.value = indices.gene.tertiary;
+	}
 }
 
 /** Form fields representing a Goal dragon's traits. */
@@ -62,14 +75,14 @@ class GoalFields extends DragonFields {
 		super(fieldsetID);
 		const get = this.fieldset.querySelector.bind(this.fieldset);
 
-		this.eye = get(`[is="fr-eyes"]`);
-		this.gender = get(`.gender`);
+		this.eye = get('[is="fr-eyes"]');
+		this.gender = get('[is="fr-genders"]');
 		this.useRanges = get("#use-ranges");
 
 		this.colourRange = {
-			primary: get(`.primary.colour-range`),
-			secondary: get(`.secondary.colour-range`),
-			tertiary: get(`.tertiary.colour-range`)
+			primary: get(".primary.colour-range"),
+			secondary: get(".secondary.colour-range"),
+			tertiary: get(".tertiary.colour-range")
 		};
 	}
 
@@ -86,6 +99,12 @@ class GoalFields extends DragonFields {
 			}
 		};
 	}
+
+	set values(indices) {
+		super.values = indices;
+		this.eye.value = indices.eye;
+		this.gender.value = indices.gender;
+	}
 }
 
 
@@ -97,17 +116,17 @@ class GoalFields extends DragonFields {
  * Form fields representing the first parent dragon.
  * @type {module:hatchcalc/view~DragonFields}
  */
-const parent1 = new DragonFields("parent1");
+const parent1 = new DragonFields("p1");
 /**
  * Form fields representing the second parent dragon.
  * @type {module:hatchcalc/view~DragonFields}
  */
-const parent2 = new DragonFields("parent2");
+const parent2 = new DragonFields("p2");
 /**
  * Form fields representing the goal hatchling.
  * @type {module:hatchcalc/view~GoalFields}
  */
-const goal = new GoalFields("hatchling");
+const goal = new GoalFields("h");
 
 
 /** The button that should cause the calculations to run and display results.
@@ -173,6 +192,15 @@ function inverse(x) {
 function round(x) {
 	return x.toFixed(2);
 }
+/** Convert a number into a string with thousand separators.
+ * @param {number} x
+ * @private */
+function thousandSeparator(x) {
+	return x.replace(/(?<!,)\d{3,}\.?\d*/, (match, token) =>
+		parseFloat(match) === 0
+		? match
+		: parseFloat(match).toLocaleString('en', {maximumFractionDigits:2}));
+}
 
 /**
  * Converts a probability report object into readable HTML.
@@ -181,9 +209,9 @@ function round(x) {
 function formatHatchlingReport(report) {
 	return `
 		<div id="overview">
-			<p>Each egg from this pair will produce a Goal hatchling ${percent(report.perEgg)} of the time; that's 1 out of every ${inverse(report.perEgg)} eggs.</p>
+			<p>Each egg from this pair will produce a Goal hatchling ${percent(report.perEgg)} of the time; that's 1 out of every ${thousandSeparator(inverse(report.perEgg))} eggs.</p>
 
-			<p>Each nest from this pair will contain at least one Goal hatchling ${percent(report.perNest)} of the time; that's 1 out of every ${inverse(report.perNest)} nests.</p>
+			<p>Each nest from this pair will contain at least one Goal hatchling ${percent(report.perNest)} of the time; that's 1 out of every ${thousandSeparator(inverse(report.perNest))} nests.</p>
 
 			<p>There will be an average of ${round(report.avgNestSize)} eggs per nest.</p>
 		</div>
@@ -238,3 +266,17 @@ calcBtn.addEventListener("click", () => {
 	console.log(report);
 	displayReport(report);
 });
+
+for (const dragon of [parent1, parent2, goal]) {
+	const fid = dragon.fieldset.id;
+	dragon.fieldset.querySelector("button.scry-btn").addEventListener("click", () => {
+		const input = dragon.fieldset.querySelector(`input#${fid}-scry`);
+		const indices = DragonTraits.fromScrylink(input.value)?.indices;
+		dragon.values = indices;
+	});
+	dragon.fieldset.querySelector("button.profile-btn").addEventListener("click", () => {
+		const input = dragon.fieldset.querySelector(`textarea#${fid}-profile`);
+		const indices = DragonTraits.fromProfile(input.value)?.indices;
+		dragon.values = indices;
+	});
+}
